@@ -46,7 +46,6 @@ AppAsset::register($this);
                     ['label' => Yii::t('menu', 'Триугольные числа'), 'url' => ['/triangular/index']],
                     ['label' => 'Entry', 'url' => ['/site/entry']],
                     ['label' => Yii::t('menu', 'Авторизация'), 'url' => ['/site/auth']],
-                    ['label' => 'Login', 'url' => ['/site/login']],
                 ],
             ]);
             NavBar::end();

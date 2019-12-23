@@ -2,17 +2,44 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\web\Response;
-use yii\web\Controller;
+use app\components\VerifyAccount;
+use app\models\auth\Auth;
+use app\models\auth\SignIn;
+use app\models\auth\SignUp;
 use app\models\Country;
 use app\models\EntryForm;
-use app\models\auth\Auth;
-use app\models\auth\SignUp;
-use app\models\auth\SignIn;
+use Yii;
+use yii\filters\AccessControl;
+use yii\web\Controller;
+use yii\web\Response;
 
 class SiteController extends Controller
 {
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only'  => ['entry', 'auth'],
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['auth'],
+                        'roles'   => ['?'],
+                    ],
+                    [
+                        'allow'        => false,
+                        'actions'      => ['auth'],
+                        'roles'        => ['@'],
+                        'denyCallback' => function($rule, $action) {
+                            throw new \Exception('Доступ запрещен');
+                        }
+                    ]
+                ],
+            ],
+        ];
+    }
 
     public function actionIndex()
     {
@@ -59,6 +86,25 @@ class SiteController extends Controller
         }
 
         return $this->renderPartial('auth', compact('modelSignIn', 'modelSignUp'));
+    }
+
+    public function actionVerification()
+    {
+        $dataGet = Yii::$app->request->get();
+        extract($dataGet);
+        
+        if (!isset($id) || !isset($hash)) {
+            throw new Exception('Не корректные данные');
+        }
+
+
+        if (VerifyAccount::activateAccount($id, $hash)) {
+            $response = 'Аккаунт активирован';
+        } else {
+            $response = 'Произошла ошибка при активации аккаунта';
+        }
+
+        return $this->render('verification', compact('response'));
     }
 
 }

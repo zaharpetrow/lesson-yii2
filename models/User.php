@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user".
@@ -12,8 +13,9 @@ use Yii;
  * @property string $email
  * @property string $password
  * @property string $img
+ * @property int $verify
  */
-class User extends \yii\db\ActiveRecord
+class User extends ActiveRecord
 {
 
     /**
@@ -31,15 +33,16 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'email', 'password'], 'required'],
+            [['verify'], 'integer'],
             [['name'], 'string', 'max' => 20],
             [['email'], 'string', 'max' => 50],
-            [['password', 'img'], 'string', 'max' => 255],
             ['email', 'email'],
             [
                 'email',
                 'unique',
                 'message' => Yii::t('app', 'Такой Email уже существует!'),
             ],
+            [['password', 'img'], 'string', 'max' => 255],
         ];
     }
 
@@ -54,6 +57,7 @@ class User extends \yii\db\ActiveRecord
             'email'    => Yii::t('app', 'Email'),
             'password' => Yii::t('app', 'Password'),
             'img'      => Yii::t('app', 'Img'),
+            'verify'   => Yii::t('app', 'Verify'),
         ];
     }
 

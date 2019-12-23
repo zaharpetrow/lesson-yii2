@@ -102,7 +102,14 @@ $(function () {
 });
 
 $(function () {
-    $('form').on('mouseenter mouseleave', 'input[aria-invalid="true"]', function (e) {
-        $(e.target).next('.help-block').toggleClass('hidden');
+    $('form').on('mouseenter mouseleave', 'input[aria-invalid]', function (e) {
+        var target = $(e.target);
+        var helpBlock = target.next('.help-block');
+
+        if (target.attr('aria-invalid') === "false") {
+            helpBlock.addClass('hidden');
+            return;
+        }
+        target.next('.help-block').toggleClass('hidden');
     });
 });

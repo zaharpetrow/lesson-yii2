@@ -86,22 +86,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
                     <?=
                             $formSignUp->field($modelSignUp, 'name')
-                            ->textInput(['class' => 'form-styling', 'value' => 'Вася'])
+                            ->textInput(['class' => 'form-styling', 'value' => 'Gregory'])
                             ->label(Yii::t('app', 'Ваше имя'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?=
                             $formSignUp->field($modelSignUp, 'email')
-                            ->textInput(['class' => 'form-styling', 'value' => 'vasya@gmail.com'])
+                            ->textInput(['class' => 'form-styling', 'value' => 'gregory@gmail.com'])
                             ->label(Yii::t('app', 'E-mail'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?=
                             $formSignUp->field($modelSignUp, 'password')
-                            ->passwordInput(['class' => 'form-styling', 'value' => '22222'])
+                            ->passwordInput(['class' => 'form-styling', 'value' => '11111zZ'])
                             ->label(Yii::t('app', 'Пароль'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?=
                             $formSignUp->field($modelSignUp, 'passwordRepeat')
-                            ->passwordInput(['class' => 'form-styling', 'value' => '22222'])
+                            ->passwordInput(['class' => 'form-styling', 'value' => '11111zZ'])
                             ->label(Yii::t('app', 'Подтверждение пароля'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?= Html::submitButton('Регистрация', ['ng-click' => 'checked = !checked', 'class' => 'btn-signup']) ?>

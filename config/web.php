@@ -43,6 +43,7 @@ $config = [
         'user'         => [
             'identityClass'   => 'app\models\User',
             'enableAutoLogin' => true,
+            'loginUrl'        => ['/auth'],
         ],
         'mailer'       => [
             'class'            => 'yii\swiftmailer\Mailer',
@@ -70,6 +71,7 @@ $config = [
             ],
             'rules'           => [
                 'triangular/<id:\d+>' => 'triangular/integer',
+                'auth'                => 'site/auth',
             ],
         ],
     ],

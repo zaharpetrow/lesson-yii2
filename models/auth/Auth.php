@@ -2,6 +2,7 @@
 
 namespace app\models\auth;
 
+use app\components\validators\PassValidator;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Html;
@@ -13,68 +14,55 @@ abstract class Auth extends Model
     const MIN_NAME   = 2;
     const MAX_NAME   = 20;
     const MIN_PASS   = 5;
-    const MAX_PASS   = 20;
     const MAX_EMAIL  = 50;
 
-    public $name;
+    public $email;
     public $password;
-    protected $passPatterns = [
-        '/^[A-ZА-Я]$/u',
-        '/^[a-zа-я]$/u',
-        '/^[0-9]$/u',
-    ];
 
     public function rules()
     {
         $rules = [
             [
-                ['name'],
+                ['email'],
                 'string',
-                'min'      => self::MIN_NAME,
-                'max'      => self::MAX_NAME,
-                'tooShort' => Yii::t('error/app', 
-                        "Имя должно содержать минимум " . self::PLURAL_STR, 
-                        ['count' => self::MIN_NAME]),
-                'tooLong'  => Yii::t('error/app', 
-                        "Имя должно содержать максимум " . self::PLURAL_STR, 
-                        ['count' => self::MAX_NAME]),
+                'max'     => self::MAX_EMAIL,
+                'tooLong' => Yii::t('error', 
+                        "E-mail должен содержать максимум " . self::PLURAL_STR, 
+                        ['count' => self::MAX_EMAIL]),
             ],
             [
-                ['name'],
-                'match',
-                'pattern' => '/^[а-яa-z0-9_-]+$/iu',
-                'message' => Yii::t('error/app', 
-                        'Имя может содержать символы нижнего и верхнего регистра a-z, а-я, 0-9, -_'),
+                'email',
+                'email',
+                'message' => 'Введите валидный E-mail',
             ],
             [
                 ['password'],
                 'string',
                 'min'      => self::MIN_PASS,
-                'tooShort' => Yii::t('error/app', 
+                'tooShort' => Yii::t('error', 
                         "Пароль должен содержать минимум " . self::PLURAL_STR, 
                         ['count' => self::MIN_PASS]),
             ],
             [
                 ['password'],
-                'validatePassword',
-                'message' => Yii::t('error/app', 'Error'),
+                PassValidator::className(),
             ],
         ];
 
-        return array_merge($this->createRequiredRules(['name', 'password']), 
-                $this->createTrimRules(['name', 'password']), 
+        return array_merge($this->createRequiredRules(['email', 'password']), 
+                $this->createTrimRules(['email', 'password']), 
                 $rules);
     }
 
     public function attributeLabels()
     {
         return [
-            'name'     => Yii::t('app', 'Имя'),
+            'email'    => Yii::t('app', 'E-mail'),
             'password' => Yii::t('app', 'Пароль'),
         ];
     }
 
-    public function createRequiredRules(array $required = []): array
+    protected function createRequiredRules(array $required = []): array
     {
         $resultArray = [];
 
@@ -84,14 +72,14 @@ abstract class Auth extends Model
             $resultArray[] = [
                 [$item],
                 'required',
-                'message' => Yii::t('error/app', "Пожалуйста, введите $requiredItem")
+                'message' => Yii::t('error', "Пожалуйста, введите $requiredItem")
             ];
         }
 
         return $resultArray;
     }
 
-    public function createTrimRules(array $itens = []): array
+    protected function createTrimRules(array $itens = []): array
     {
         $resultArray = [];
 
@@ -126,18 +114,5 @@ abstract class Auth extends Model
         return $result;
     }
 
-    public function validatePassword($attribute, $params)
-    {
-//        var_dump($attribute, $params);
-        $msg = 'Пароль должен содержать хотя бы одну: '
-                . 'заглавную и прописную букву латинского или киррилического алфавита, а так же цифру';
-        foreach ($this->passPatterns as $pattern) {
-            if (!preg_match($pattern, $this->$attribute)) {
-                $this->addError($attribute, $msg);
-            }
-        }
-    }
-
-    abstract public function run(array $dataPost):array;
-
+    abstract public function run(array $dataPost): array;
 }
