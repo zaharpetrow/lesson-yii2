@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
@@ -15,7 +16,7 @@ use yii\db\ActiveRecord;
  * @property string $img
  * @property int $verify
  */
-class User extends ActiveRecord
+class User extends ActiveRecord implements IdentityInterface
 {
 
     /**
@@ -59,6 +60,31 @@ class User extends ActiveRecord
             'img'      => Yii::t('app', 'Img'),
             'verify'   => Yii::t('app', 'Verify'),
         ];
+    }
+
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+//        return static::findOne(['access_token' => $token]);
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+//        return $this->authKey;
+    }
+
+    public function validateAuthKey($authKey)
+    {
+//        return $this->authKey === $authKey;
     }
 
 }

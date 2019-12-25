@@ -52,7 +52,7 @@ $(function () {
 });
 
 $(function () {
-    $("form.form-signup").on('beforeValidate', function () {
+    $("form").on('beforeValidate', function () {
         var $yiiform = $(this);
         $.ajax({
             type: $yiiform.attr('method'),
@@ -62,7 +62,11 @@ $(function () {
             console.log(data);
             if (data.success) {
 //                data is saved
-                signupSuccess();
+                if ($yiiform.hasClass('form-signin')) {
+                    signinSuccess(data.success);
+                } else if ($yiiform.hasClass('form-signup')) {
+                    signupSuccess();
+                }
             } else if (data.validation) {
 //                server validation failed
                 $yiiform.yiiActiveForm('updateMessages', data.validation, true);
@@ -83,19 +87,20 @@ $(function () {
             $(".btn-goback").toggleClass("btn-goback-signup");
         }
 
-        return false;
-    });
-});
+        function signinSuccess(data) {
+            $('.username').html(data.name);
+            $('.profile-photo').css({
+                background: 'url(' + data.img + ')'
+            });
 
-$(function () {
-    $("form.form-signin").on('beforeSubmit', function () {
-        $(".btn-animate").toggleClass("btn-animate-grow");
-        $(".welcome").toggleClass("welcome-left");
-        $(".cover-photo").toggleClass("cover-photo-down");
-//  $(".frame").toggleClass("frame-short");
-        $(".profile-photo").toggleClass("profile-photo-down");
-        $(".btn-goback").toggleClass("btn-goback-up");
-        $(".forgot").toggleClass("forgot-fade");
+            $(".btn-animate").toggleClass("btn-animate-grow");
+            $(".welcome").toggleClass("welcome-left");
+            $(".cover-photo").toggleClass("cover-photo-down");
+//          $(".frame").toggleClass("frame-short");
+            $(".profile-photo").toggleClass("profile-photo-down");
+            $(".btn-goback").toggleClass("btn-goback-up");
+            $(".forgot").toggleClass("forgot-fade");
+        }
 
         return false;
     });

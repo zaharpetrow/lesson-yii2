@@ -3,6 +3,7 @@
 namespace app\models\auth;
 
 use app\components\validators\PassValidator;
+use app\models\User;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Html;
@@ -16,6 +17,7 @@ abstract class Auth extends Model
     const MIN_PASS   = 5;
     const MAX_EMAIL  = 50;
 
+    public $user;
     public $email;
     public $password;
 
@@ -112,6 +114,15 @@ abstract class Auth extends Model
         }
 
         return $result;
+    }
+
+    protected function getUser(): User
+    {
+        if (empty($this->user)) {
+            $this->user = new User();
+        }
+
+        return $this->user;
     }
 
     abstract public function run(array $dataPost): array;

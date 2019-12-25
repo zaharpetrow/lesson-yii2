@@ -29,11 +29,16 @@ class SiteController extends Controller
                         'roles'   => ['?'],
                     ],
                     [
+                        'allow'   => true,
+                        'actions' => ['entry'],
+                        'roles'   => ['@'],
+                    ],
+                    [
                         'allow'        => false,
                         'actions'      => ['auth'],
                         'roles'        => ['@'],
                         'denyCallback' => function($rule, $action) {
-                            throw new \Exception('Доступ запрещен');
+                            Yii::$app->response->redirect('/');
                         }
                     ]
                 ],
@@ -59,15 +64,6 @@ class SiteController extends Controller
         return $this->render($view, ['model' => $model]);
     }
 
-    public function actionTestDb()
-    {
-        $countries     = Country::find()->orderBy('name')->all();
-        $country       = Country::findOne('US');
-        $country->name = 'U.S.A.';
-        $country->save();
-        return $this->render('testdb', ['countries' => $country]);
-    }
-
     public function actionAuth()
     {
         $modelSignIn = new SignIn();
@@ -88,11 +84,18 @@ class SiteController extends Controller
         return $this->renderPartial('auth', compact('modelSignIn', 'modelSignUp'));
     }
 
+    public function actionLogout()
+    {
+        Yii::$app->user->logout();
+
+        return $this->redirect('/');
+    }
+
     public function actionVerification()
     {
         $dataGet = Yii::$app->request->get();
         extract($dataGet);
-        
+
         if (!isset($id) || !isset($hash)) {
             throw new Exception('Не корректные данные');
         }

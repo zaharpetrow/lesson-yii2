@@ -4,11 +4,11 @@
 /* @var $modelSignIn app\models\auth\SignIn */
 /* @var $modelSignUp app\models\auth\SignUp */
 
-use yii\helpers\Html;
 use app\assets\AuthAsset;
-use yii\widgets\Breadcrumbs;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use yii\widgets\Pjax;
+use yii\widgets\Breadcrumbs;
 
 AuthAsset::register($this);
 
@@ -55,13 +55,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]);
                     ?>
                     <?=
-                            $formSignIn->field($modelSignIn, 'name')
-                            ->textInput(['class' => 'form-styling', 'value' => 'Вася'])
-                            ->label(Yii::t('app', 'Ваше имя'))->error(['class' => 'help-block hidden'])
+                            $formSignIn->field($modelSignIn, 'email')
+                            ->textInput(['class' => 'form-styling', 'value' => 'gregory@gmail.com'])
+                            ->label(Yii::t('app', 'E-mail'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?=
                             $formSignIn->field($modelSignIn, 'password')
-                            ->passwordInput(['class' => 'form-styling', 'value' => '22222'])
+                            ->passwordInput(['class' => 'form-styling', 'value' => '11111zZ'])
                             ->label(Yii::t('app', 'Пароль'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?=
@@ -129,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h1 class="welcome"><?= Yii::t('app', 'Добро пожаловать') ?>
                         <div class="username">Chris</div>
                     </h1>
-                    <a class="btn-goback" value="Refresh" onClick="history.go()"><?= Yii::t('app', 'На главную') ?></a>
+                    <a href="<?= Url::home() ?>" class="btn-goback"><?= Yii::t('app', 'На главную') ?></a>
                 </div>
             </div>
 

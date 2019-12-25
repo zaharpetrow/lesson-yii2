@@ -45,7 +45,13 @@ AppAsset::register($this);
                         ]],
                     ['label' => Yii::t('menu', 'Триугольные числа'), 'url' => ['/triangular/index']],
                     ['label' => 'Entry', 'url' => ['/site/entry']],
-                    ['label' => Yii::t('menu', 'Авторизация'), 'url' => ['/site/auth']],
+                    Yii::$app->user->isGuest ? (
+                            ['label' => Yii::t('menu', 'Авторизация'), 'url' => ['/site/auth']]
+                            ) : (
+                            ['label' => Yii::t('menu', 
+                                    'Выйти (' . Yii::$app->user->identity->name . ')'), 
+                                    'url' => ['/site/logout']]
+                            )
                 ],
             ]);
             NavBar::end();

@@ -68,7 +68,7 @@ class SignUp extends Auth
     {
         $models = [];
         if ($this->load($dataPost) && $this->validate()) {
-            $user           = new User();
+            $user           = $this->getUser();
             $user->name     = $this->name;
             $user->email    = $this->email;
             $user->password = $this->passwordHash($this->password);
