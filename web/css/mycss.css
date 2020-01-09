@@ -35,3 +35,23 @@ td, th{
     font-size: 10px;
     padding: 2px;
 }
+.menu-username{
+    display: inline-block;
+    margin-left: 2px;
+}
+.navbar-nav{
+    display: flex;
+    align-items: center;
+}
+.menuitem-profile{
+    display: flex !important;
+    align-items: center;
+}
+.user-icon{
+    border-radius: 70px;
+    display: inline-block;
+}
+.icon-xs{
+    height: 35px;
+    width: 35px;
+}

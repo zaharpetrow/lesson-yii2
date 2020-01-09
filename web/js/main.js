@@ -12,9 +12,9 @@
     $('table').on('mouseleave', 'tr.mylink', function (e) {
         $('.hint-link').remove();
     });
-    
-    $('table').on('click', 'tr.mylink', function(e){
-        location.href=$(this).closest('tr.mylink').attr('href');
+
+    $('table').on('click', 'tr.mylink', function (e) {
+        location.href = $(this).closest('tr.mylink').attr('href');
     });
 
 }());

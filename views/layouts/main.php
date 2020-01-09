@@ -2,12 +2,11 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use app\assets\AppAsset;
+use app\widgets\Menu;
 use app\widgets\Alert;
 use yii\helpers\Html;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
-use app\assets\AppAsset;
 
 Yii::$app->name = 'Приложение';
 AppAsset::register($this);
@@ -27,35 +26,7 @@ AppAsset::register($this);
         <?php $this->beginBody() ?>
 
         <div class="wrap">
-            <?php
-            NavBar::begin([
-                'brandLabel' => Yii::$app->name,
-                'brandUrl'   => Yii::$app->homeUrl,
-                'options'    => [
-                    'class' => 'navbar-inverse navbar-fixed-top',
-                ],
-            ]);
-            echo Nav::widget([
-                'options' => ['class' => 'navbar-nav navbar-right'],
-                'items'   => [
-                    ['label' => Yii::t('menu', 'Главная'), 'url' => Yii::$app->homeUrl],
-                    ['label' => Yii::t('menu', 'Страны'), 'items' => [
-                            ['label' => 'index', 'url' => ['/country/index']],
-                            ['label' => 'text-block', 'url' => ['/country/with-text']],
-                        ]],
-                    ['label' => Yii::t('menu', 'Триугольные числа'), 'url' => ['/triangular/index']],
-                    ['label' => 'Entry', 'url' => ['/site/entry']],
-                    Yii::$app->user->isGuest ? (
-                            ['label' => Yii::t('menu', 'Авторизация'), 'url' => ['/site/auth']]
-                            ) : (
-                            ['label' => Yii::t('menu', 
-                                    'Выйти (' . Yii::$app->user->identity->name . ')'), 
-                                    'url' => ['/site/logout']]
-                            )
-                ],
-            ]);
-            NavBar::end();
-            ?>
+            <?= Menu::widget() ?>
 
             <div class="container">
                 <?=

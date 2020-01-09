@@ -29,11 +29,13 @@ class SignIn extends Auth
         $models = [];
 
         if ($this->load($dataPost) && $this->validate()) {
-            $user = $this->getUser();
-            $user = $user->find()->where(['email' => $this->email])->one();
+            $user = $this->getUser()
+                    ->find()
+                    ->where(['email' => $this->email])
+                    ->one();
 
             if ($this->authValidate($user)) {
-                Yii::$app->user->login($user);
+                Yii::$app->user->login($user, $this->remember ? 3600 * 24 * 30 : 0);
                 $authAttrs = [
                     'name' => $user->attributes['name'],
                     'img'  => Avatar::getThumbnail(),
@@ -48,8 +50,6 @@ class SignIn extends Auth
     protected function authValidate($user): bool
     {
         if ($user !== null && $user instanceof User && $user->validate()) {
-//            var_dump($user !== null, $user instanceof User, $user->validate(),
-//                    Yii::$app->security->validatePassword($this->password, $user->password));
             if (Yii::$app->security->validatePassword($this->password, $user->password)) {
                 return true;
             }
@@ -59,11 +59,6 @@ class SignIn extends Auth
         $this->addError('password', $error);
         $this->addError('email', $error);
         return false;
-    }
-
-    protected function resizeImg()
-    {
-        
     }
 
 }
