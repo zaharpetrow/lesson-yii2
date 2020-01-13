@@ -44,7 +44,7 @@ class VerifyAccount extends Model
     {
         $user        = User::find()->where(['email' => self::$email])->one();
         $arrayToLink = [
-            'site/verification',
+            'profile/verification',
             'id'   => $user->id,
             'hash' => Yii::$app->security->generatePasswordHash($user->email),
         ];

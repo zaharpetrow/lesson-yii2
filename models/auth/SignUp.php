@@ -4,7 +4,6 @@ namespace app\models\auth;
 
 use app\components\VerifyAccount;
 use Yii;
-use app\models\User;
 
 class SignUp extends Auth
 {

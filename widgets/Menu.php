@@ -18,8 +18,8 @@ class Menu extends Widget
 
     public function run()
     {
-        $userIcon = '<div class="user-icon icon-xs" style="background: url(' . Avatar::getIconXS() . ')"></div>';
-
+        $userIcon        = '<div class="user-icon icon-xs" style="background: url(' . Avatar::getIconXS() . ')"></div>';
+        $userName        = '<div class="menu-username">' . Yii::$app->user->identity->name . '</div>';
         $profileMenuItem = [
             'label'    => Yii::$app->user->identity->name,
             'options'  => ['class' => 'dropdown'],
@@ -30,15 +30,15 @@ class Menu extends Widget
             'items'    => [
                 [
                     'label' => Yii::t('menu', 'Аккаунт'),
-                    'url'   => ['#']
+                    'url'   => ['/profile']
                 ],
                 [
                     'label' => Yii::t('menu', 'Выйти'),
-                    'url'   => ['/site/logout']
+                    'url'   => ['/logout']
                 ]
             ],
         ];
-        return $this->render('menu', compact('profileMenuItem'));
+        return $this->render('menu', compact('userIcon', 'userName'));
     }
 
 }

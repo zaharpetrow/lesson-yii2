@@ -22,10 +22,9 @@ AppAsset::register($this);
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
     </head>
-    <body>
+    <body id="reportsPage">
         <?php $this->beginBody() ?>
-
-        <div class="wrap">
+        <div class="" id="home">
             <?= Menu::widget() ?>
 
             <div class="container">
@@ -38,15 +37,15 @@ AppAsset::register($this);
                 <?= $content ?>
             </div>
         </div>
+        <footer class="footer-bottom tm-footer row tm-mt-small">
+            <div class="col-12 font-weight-light">
+                <p class="text-center text-white mb-0 px-4 small">
+                    Copyright &copy; <b><?= date("Y") ?></b>
 
-        <footer class="footer">
-            <div class="container">
-                <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
-
-                <p class="pull-right"><?= Yii::powered() ?></p>
+                    <?= Yii::powered() ?>
+                </p>
             </div>
         </footer>
-
         <?php $this->endBody() ?>
     </body>
 </html>

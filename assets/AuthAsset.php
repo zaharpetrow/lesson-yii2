@@ -6,16 +6,18 @@ use yii\web\AssetBundle;
 
 class AuthAsset extends AssetBundle
 {
+
     public $basePath = '@webroot';
-    public $baseUrl = '@web';
-    public $css = [
-        'css/auth-style.css',
+    public $baseUrl  = '@web';
+    public $css      = [
+        'asset-auth/css/auth-style.css',
     ];
-    public $js = [
-        'js/auth-script.js',
+    public $js       = [
+        'asset-auth/js/auth-script.js',
     ];
-    public $depends = [
+    public $depends  = [
         'app\assets\AppAsset',
         'app\assets\AngularAsset',
     ];
+
 }

@@ -40,6 +40,9 @@ class SignIn extends Auth
                     'name' => $user->attributes['name'],
                     'img'  => Avatar::getThumbnail(),
                 ];
+
+                $this->userDirExists();
+
                 return ['success' => $authAttrs];
             }
         }
@@ -59,6 +62,15 @@ class SignIn extends Auth
         $this->addError('password', $error);
         $this->addError('email', $error);
         return false;
+    }
+
+    protected function userDirExists()
+    {
+        $dirName = Yii::getAlias('@webroot/avatar/' . md5(Yii::$app->user->identity->email));
+
+        if (!file_exists($dirName)) {
+            mkdir($dirName);
+        }
     }
 
 }

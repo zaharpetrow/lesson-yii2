@@ -84,30 +84,4 @@ class SiteController extends Controller
         return $this->renderPartial('auth', compact('modelSignIn', 'modelSignUp'));
     }
 
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->redirect('/');
-    }
-
-    public function actionVerification()
-    {
-        $dataGet = Yii::$app->request->get();
-        extract($dataGet);
-
-        if (!isset($id) || !isset($hash)) {
-            throw new Exception('Не корректные данные');
-        }
-
-
-        if (VerifyAccount::activateAccount($id, $hash)) {
-            $response = 'Аккаунт активирован';
-        } else {
-            $response = 'Произошла ошибка при активации аккаунта';
-        }
-
-        return $this->render('verification', compact('response'));
-    }
-
 }

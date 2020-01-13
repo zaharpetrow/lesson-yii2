@@ -72,6 +72,7 @@ $config = [
             'rules'           => [
                 'triangular/<id:\d+>' => 'triangular/integer',
                 'auth'                => 'site/auth',
+                'logout'              => 'profile/logout',
             ],
         ],
     ],
