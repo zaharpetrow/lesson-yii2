@@ -8,8 +8,13 @@ use app\widgets\Alert;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 
-Yii::$app->name = 'Приложение';
 AppAsset::register($this);
+$this->registerLinkTag([
+    'rel'   => 'icon',
+    'type'  => 'image/png',
+    'sizes' => '32x32',
+    'href'  => Yii::getAlias("@web/logo.png"),
+]);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

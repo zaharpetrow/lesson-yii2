@@ -38,7 +38,7 @@ class Menu extends Widget
                 ]
             ],
         ];
-        return $this->render('menu', compact('userIcon', 'userName'));
+        return $this->render('header', compact('userIcon', 'userName'));
     }
 
 }

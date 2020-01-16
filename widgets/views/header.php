@@ -7,7 +7,7 @@ use yii\helpers\Url;
 <nav class="navbar navbar-expand-xl">
     <div class="container h-100">
         <a class="navbar-brand" href="<?= Yii::$app->homeUrl ?>">
-            <h1 class="tm-site-title mb-0"><?= Yii::$app->name ?></h1>
+            <div class="logo mb-0"><img src="<?= Url::base(true) . "/logo.png" ?>" alt=""></div>
         </a>
         <button
             class="navbar-toggler ml-auto mr-0"

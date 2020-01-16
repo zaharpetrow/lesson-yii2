@@ -3,13 +3,23 @@
 namespace app\models\auth;
 
 use app\components\Avatar;
+use app\components\behaviors\AuthBehavior;
 use app\models\User;
 use Yii;
 
 class SignIn extends Auth
 {
 
+    const EVENT_AFTER_SIGN_IN = "afterSignIn";
+
     public $remember;
+    
+    public function behaviors()
+    {
+        return [
+            AuthBehavior::className()
+        ];
+    }
 
     public function rules()
     {
@@ -41,7 +51,7 @@ class SignIn extends Auth
                     'img'  => Avatar::getThumbnail(),
                 ];
 
-                $this->userDirExists();
+                $this->trigger(static::EVENT_AFTER_SIGN_IN);
 
                 return ['success' => $authAttrs];
             }
@@ -54,6 +64,7 @@ class SignIn extends Auth
     {
         if ($user !== null && $user instanceof User && $user->validate()) {
             if (Yii::$app->security->validatePassword($this->password, $user->password)) {
+                $this->checkUserOptions($user);
                 return true;
             }
         }
@@ -62,15 +73,6 @@ class SignIn extends Auth
         $this->addError('password', $error);
         $this->addError('email', $error);
         return false;
-    }
-
-    protected function userDirExists()
-    {
-        $dirName = Yii::getAlias('@webroot/avatar/' . md5(Yii::$app->user->identity->email));
-
-        if (!file_exists($dirName)) {
-            mkdir($dirName);
-        }
     }
 
 }

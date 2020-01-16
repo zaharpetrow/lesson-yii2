@@ -2,29 +2,35 @@
 
 namespace app\components;
 
+use app\components\helpers\UrlHelper;
+use Exception;
 use Yii;
-use yii\helpers\Url;
 use yii\imagine\Image;
 
 class Avatar
 {
 
     const DEFAULT_AVATAR = 'default-avatar.jpg';
-    
-    const XS_ICON = [
+    const XS_ICON        = [
         'prefix' => 'xs-icon-',
         'height' => 35,
         'width'  => 35,
     ];
-    const L_ICON = [
+    const L_ICON         = [
         'prefix' => 'l-icon-',
         'height' => 350,
         'width'  => 350,
     ];
-    const THUMB   = [
+    const THUMB          = [
         'prefix' => 'thumb-',
         'height' => 120,
         'width'  => 120,
+    ];
+
+    protected static $options = [
+        'imgName'   => '',
+        'pathToImg' => '',
+        'urlToImg'  => '',
     ];
 
     public static function getIconXS(): string
@@ -45,83 +51,71 @@ class Avatar
 
     protected static function getIcon(array $iconOptions): string
     {
-        $imageName = static::getImage();
+        $dataImg   = static::getDataImg();
+        $imageName = $dataImg['imgName'];
         $iconName  = $iconOptions['prefix'] . $imageName;
-        $iconPath  = static::getPath($iconName);
+        $iconPath  = $dataImg['pathToImg'] . "/$iconName";
 
-        if (!static::avatarExists($iconPath)) {
+        if (!static::iconExists($iconPath)) {
             static::createIcon([
-                'imageName' => $imageName,
-                'filePath'  => $iconPath,
-                'width'     => $iconOptions['width'],
-                'height'    => $iconOptions['height'],
+                'imagePath'   => $dataImg['pathToImg'] . "/$imageName",
+                'newFilePath' => $iconPath,
+                'width'       => $iconOptions['width'],
+                'height'      => $iconOptions['height'],
             ]);
         }
 
-        return static::getWebPath($iconName);
+        return $dataImg['urlToImg'] . "/$iconName";
     }
 
-    protected static function getWebPath(string $iconName): string
+    protected function getDataImg(): array
     {
-        $basePath = Url::base(true) . "/avatar";
         if (static::userImageExists()) {
-            return "$basePath/" . md5(Yii::$app->user->identity->email) . "/$iconName";
+            static::$options['imgName']   = Yii::$app->user->identity->userOptions->img;
+            static::$options['pathToImg'] = UrlHelper::profileRoot()
+                    . '/' . Yii::$app->user->identity->userOptions->dir_name;
+            static::$options['urlToImg']  = UrlHelper::profileWeb()
+                    . '/' . Yii::$app->user->identity->userOptions->dir_name;
+        } else {
+            static::$options['imgName']   = static::DEFAULT_AVATAR;
+            static::$options['pathToImg'] = UrlHelper::profileRoot();
+            static::$options['urlToImg']  = UrlHelper::profileWeb();
         }
-        return "$basePath/$iconName";
+
+        return static::$options;
     }
 
     protected static function createIcon(array $options)
     {
         Image::thumbnail(
-                static::getPath($options['imageName']), 
-                $options['width'], 
-                $options['height']
+                        $options['imagePath'], $options['width'], $options['height']
                 )
-                ->save($options['filePath']);
-    }
-
-    protected static function getImage(): string
-    {
-        $imageName = (static::userImageExists()) ?
-                Yii::$app->user->identity->img : static::DEFAULT_AVATAR;
-
-        return $imageName;
+                ->save($options['newFilePath']);
     }
 
     protected static function userImageExists(): bool
     {
-        if (Yii::$app->user->identity->img !== null) {
+        $imageName         = Yii::$app->user->identity->userOptions->img;
+        $defaultAvatarPath = UrlHelper::profileRoot() . "/" . static::DEFAULT_AVATAR;
+
+        if (!file_exists($defaultAvatarPath)) {
+            $error = "Не найден аватар по умолчанию: $defaultAvatarPath";
+            throw new Exception($error);
+        }
+
+        if ($imageName !== null &&
+                file_exists(UrlHelper::profileUserRoot() . "/$imageName")) {
             return true;
         }
         return false;
     }
 
-    protected static function avatarExists(string $filePath)
+    protected static function iconExists(string $filePath)
     {
         if (file_exists($filePath)) {
             return true;
         }
-
-        $defaultFilePath = static::getPath(static::DEFAULT_AVATAR);
-        if (!file_exists($defaultFilePath)) {
-            $error = "Не найдены: аватар пользователя и аватар по умолчанию\n"
-                    . "Аватар по умолчанию: $defaultFilePath\n"
-                    . "Аватар пользователя: $filePath";
-            throw new \Exception($error);
-        }
-
-
         return false;
-    }
-
-    protected static function getPath(string $fileName): string
-    {
-        $avatarRoot = Yii::getAlias("@avatarRoot");
-
-        if (static::userImageExists()) {
-            return "$avatarRoot/" . md5(Yii::$app->user->identity->email) . "/$fileName";
-        }
-        return Yii::getAlias("@avatarRoot/$fileName");
     }
 
 }

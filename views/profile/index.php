@@ -4,7 +4,7 @@ use app\components\Avatar;
 
 /* @var $this yii\web\View */
 
-$this->title = Yii::t('app', 'Профиль');
+$this->title = Yii::$app->name . " | " . Yii::t('app', 'Профиль');
 ?>
 <div class="container mt-5">
     <!-- row -->

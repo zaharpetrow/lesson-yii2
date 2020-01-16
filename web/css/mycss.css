@@ -51,3 +51,9 @@ td, th{
 .footer-bottom{
     margin-top: -79.2px;
 }
+.logo{
+    /*display: flex;*/
+}
+.logo img{
+    height: 100px;
+}

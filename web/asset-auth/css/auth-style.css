@@ -1,4 +1,7 @@
-html, body * { box-sizing: border-box; font-family: 'Open Sans', sans-serif; }
+html, body * {
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
 
 body {
     background:
@@ -16,8 +19,12 @@ body {
 
 .container {
     width: 100%;
-    padding-top: 60px;
-    padding-bottom: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /*    padding-top: 60px;
+        padding-bottom: 100px;*/
 }
 
 .frame {

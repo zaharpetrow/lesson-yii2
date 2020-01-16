@@ -8,13 +8,16 @@ use app\assets\AuthAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use yii\widgets\Breadcrumbs;
 
 AuthAsset::register($this);
+$this->registerLinkTag([
+    'rel'   => 'icon',
+    'type'  => 'image/png',
+    'sizes' => '32x32',
+    'href'  => Yii::getAlias("@web/logo.png"),
+]);
 
-$this->title = Yii::t('app', 'Аутентификация');
-
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = Yii::$app->name . " | " . Yii::t('app', 'Аутентификация');
 ?>
 <?php $this->beginPage(); ?>
 <!DOCTYPE html>
@@ -28,15 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </head>
     <body>
         <?php $this->beginBody(); ?>
-        <?=
-        Breadcrumbs::widget([
-            'homeLink' => [
-                'label' => Yii::t('app', 'Главная'),
-                'url'   => Yii::$app->homeUrl,
-            ],
-            'links'    => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ])
-        ?>
         <div class="container">
             <div class="frame">
                 <div class="nav">
@@ -47,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div ng-app ng-init="checked = false">
                     <?php
-                    $formSignIn                    = ActiveForm::begin([
+                    $formSignIn  = ActiveForm::begin([
                                 'options' => [
                                     'class' => 'form-signin',
                                     'name'  => 'form',
@@ -77,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php ActiveForm::end(); ?>
 
                     <?php
-                    $formSignUp                    = ActiveForm::begin([
+                    $formSignUp  = ActiveForm::begin([
                                 'options' => [
                                     'class' => 'form-signup',
                                     'name'  => 'form',

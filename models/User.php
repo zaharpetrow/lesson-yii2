@@ -43,7 +43,7 @@ class User extends ActiveRecord implements IdentityInterface
                 'unique',
                 'message' => Yii::t('app', 'Такой Email уже существует!'),
             ],
-            [['password', 'img'], 'string', 'max' => 255],
+            [['password'], 'string', 'max' => 255],
         ];
     }
 
@@ -57,9 +57,16 @@ class User extends ActiveRecord implements IdentityInterface
             'name'     => Yii::t('app', 'Name'),
             'email'    => Yii::t('app', 'Email'),
             'password' => Yii::t('app', 'Password'),
-            'img'      => Yii::t('app', 'Img'),
             'verify'   => Yii::t('app', 'Verify'),
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserOptions()
+    {
+        return $this->hasOne(UserOptions::className(), ['user_id' => 'id']);
     }
 
     public static function findIdentity($id)

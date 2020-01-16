@@ -2,8 +2,10 @@
 
 namespace app\models\auth;
 
+use app\components\helpers\UrlHelper;
 use app\components\validators\PassValidator;
 use app\models\User;
+use app\models\UserOptions;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Html;
@@ -123,6 +125,23 @@ abstract class Auth extends Model
         }
 
         return $this->user;
+    }
+
+    protected function checkUserOptions(User $user)
+    {
+        $userOptions = UserOptions::find()->where(['user_id' => $user->id])->one();
+
+        if ($userOptions === null) {
+            $userOptions          = new UserOptions();
+            $userOptions->user_id = $user->id;
+            $userOptions->save();
+        }
+
+        if (!$userOptions->dir_name) {
+            $newDirName            = UrlHelper::createUserDirName($user);
+            $userOptions->dir_name = $newDirName;
+            $userOptions->save();
+        }
     }
 
     abstract public function run(array $dataPost): array;
