@@ -1,9 +1,17 @@
 <?php
 
+use app\assets\ProfileAsset;
 use app\components\Avatar;
+use app\widgets\UploadAvatarPopup;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\View;
+use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
+/* @var $this View */
+/* @var $profileData app\models\profile\ProfileData */
 
+ProfileAsset::register($this);
 $this->title = Yii::$app->name . " | " . Yii::t('app', 'Профиль');
 ?>
 <div class="container mt-5">
@@ -11,7 +19,7 @@ $this->title = Yii::$app->name . " | " . Yii::t('app', 'Профиль');
     <div class="row tm-content-row">
         <div class="tm-block-col tm-col-avatar">
             <div class="tm-bg-primary-dark tm-block tm-block-avatar">
-                <h2 class="tm-block-title">Сменить фото</h2>
+                <h2 class="tm-block-title"><?= Yii::t('app', 'Сменить фото') ?></h2>
                 <div class="tm-avatar-container">
                     <div class="tm-avatar-container">
                         <img
@@ -19,98 +27,69 @@ $this->title = Yii::$app->name . " | " . Yii::t('app', 'Профиль');
                             alt="Avatar"
                             class="tm-avatar-l img-fluid mb-4"
                             />
-                        <a href="#" class="tm-avatar-delete-link">
-                            <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                        </a>
-                    </div>
-                    <div class="tm-avatar-container">
-                        <img
-                            src="<?= Avatar::getThumbnail() ?>"
-                            alt="Avatar"
-                            class="tm-avatar-thumb img-fluid mb-4"
-                            />
-                    </div>
-                    <div class="tm-avatar-container">
-                        <img
-                            src="<?= Avatar::getIconXS() ?>"
-                            alt="Avatar"
-                            class="tm-avatar-xs img-fluid mb-4"
-                            />
+                            <?php if (Yii::$app->user->identity->userOptions->img !== null): ?>
+                            <a href="<?= Url::to(['profile/delete-avatar']) ?>" 
+                               class="tm-avatar-delete-link delete-avatar">
+                                <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <button class="btn btn-primary btn-block text-uppercase">
-                    Загрузить
+                <button id="update-avatar" class="btn btn-primary btn-block text-uppercase">
+                    <?= Yii::t('app', 'Загрузить') ?>
                 </button>
             </div>
         </div>
         <div class="tm-block-col tm-col-account-settings">
             <div class="tm-bg-primary-dark tm-block tm-block-settings">
-                <h2 class="tm-block-title">Account Settings</h2>
-                <form action="" class="tm-signup-form row">
-                    <div class="form-group col-lg-6">
-                        <label for="name">Account Name</label>
-                        <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            class="form-control validate"
-                            />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="email">Account Email</label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            class="form-control validate"
-                            />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="password">Password</label>
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            class="form-control validate"
-                            />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="password2">Re-enter Password</label>
-                        <input
-                            id="password2"
-                            name="password2"
-                            type="password"
-                            class="form-control validate"
-                            />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="phone">Phone</label>
-                        <input
-                            id="phone"
-                            name="phone"
-                            type="tel"
-                            class="form-control validate"
-                            />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="tm-hide-sm">&nbsp;</label>
-                        <button
-                            type="submit"
-                            class="btn btn-primary btn-block text-uppercase"
-                            >
-                            Update Your Profile
-                        </button>
-                    </div>
-                    <div class="col-12">
-                        <button
-                            type="submit"
-                            class="btn btn-primary btn-block text-uppercase"
-                            >
-                            Delete Your Account
-                        </button>
-                    </div>
-                </form>
+                <h2 class="tm-block-title"><?= Yii::t('app', 'Настройки аккаунта') ?></h2>
+                <?php
+                $formProfile = ActiveForm::begin([
+                            'options' => [
+                                'class' => 'tm-signup-form row',
+                                'name'  => 'form',
+                            ],
+                ]);
+                ?>
+                <div class="col-12 section"><?= Yii::t('app', 'Сменить имя') ?></div>
+                <?=
+                $formProfile->field($profileData, 'name', [
+                    'options' => [
+                        'class' => 'form-group col-lg-12',
+                    ],
+                ])->textInput([
+                    'class' => 'form-control validate',
+                    'value' => Yii::$app->user->identity->name,
+                ])->error(['class' => 'help-block'])
+                ?>
+                <div class="col-12 section"><?= Yii::t('app', 'Сменить пароль') ?></div>
+                <?=
+                $formProfile->field($profileData, 'password', [
+                    'options' => [
+                        'class' => 'form-group col-lg-6',
+                    ],
+                ])->passwordInput([
+                    'class' => 'form-control validate',
+                ])->error(['class' => 'help-block'])
+                ?>
+                <?=
+                $formProfile->field($profileData, 'passwordRepeat', [
+                    'options' => [
+                        'class' => 'form-group col-lg-6',
+                    ],
+                ])->passwordInput([
+                    'class' => 'form-control validate',
+                ])->error(['class' => 'help-block'])
+                ?>
+                <div class="col-12">
+                    <?= Html::submitButton(Yii::t('app', 'Сохранить'), ['class' => 'btn btn-primary btn-block text-uppercase']) ?>
+                </div>
+
+                <?php ActiveForm::end(); ?>
             </div>
         </div>
     </div>
+</div>
+<div class="popup">
+    <?= UploadAvatarPopup::widget() ?>
 </div>

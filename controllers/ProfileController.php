@@ -3,9 +3,15 @@
 namespace app\controllers;
 
 use app\components\VerifyAccount;
+use app\models\profile\ProfileData;
+use app\models\profile\UploadAvatar;
+use app\models\UserOptions;
+use Exception;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\Response;
+use yii\web\UploadedFile;
 
 class ProfileController extends Controller
 {
@@ -15,7 +21,7 @@ class ProfileController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['index', 'logout'],
+                'only'  => ['index', 'logout', 'delete-avatar'],
                 'rules' => [
                     [
                         'allow' => false,
@@ -32,7 +38,22 @@ class ProfileController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        $uploadModel = new UploadAvatar();
+        $profileData = new ProfileData();
+
+        if (Yii::$app->request->isAjax) {
+            $uploadModel->imageFile = UploadedFile::getInstance($uploadModel, 'imageFile');
+
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $uploadModel->upload();
+        }
+
+        if ($profileData->load(Yii::$app->request->post()) && $profileData->validate()) {
+            $profileData->updateProfile();
+            $this->refresh();
+        }
+
+        return $this->render('index', compact('profileData'));
     }
 
     public function actionLogout()
@@ -59,6 +80,22 @@ class ProfileController extends Controller
         }
 
         return $this->render('verification', compact('response'));
+    }
+
+    public function actionDeleteAvatar()
+    {
+        $userIdentity = Yii::$app->user->identity;
+
+        $userIdentity->userOptions->img = null;
+        UploadAvatar::clearDir();
+
+        $userOptions      = UserOptions::find()->where(['user_id' => $userIdentity->id])->one();
+        $userOptions->img = null;
+        $userOptions->save();
+
+
+
+        return $this->redirect(['profile/']);
     }
 
 }

@@ -33,6 +33,7 @@ class UserOptions extends \yii\db\ActiveRecord
             [['user_id', 'dir_name'], 'required'],
             [['user_id'], 'integer'],
             [['dir_name'], 'string', 'max' => 255],
+            [['img'], 'string', 'max' => 255],
             [
                 ['user_id'],
                 'exist',
@@ -52,6 +53,7 @@ class UserOptions extends \yii\db\ActiveRecord
             'id'       => Yii::t('app', 'ID'),
             'user_id'  => Yii::t('app', 'User ID'),
             'dir_name' => Yii::t('app', 'Dir Name'),
+            'img'      => Yii::t('app', 'Image'),
         ];
     }
 

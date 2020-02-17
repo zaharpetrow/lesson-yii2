@@ -19,6 +19,9 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
 
+    const STATUS_VERIFIED   = 1;
+    const STATUS_UNVERIFIED = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -86,12 +89,27 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getAuthKey()
     {
-        return $this->authKey;
+        return $this->password;
     }
 
     public function validateAuthKey($authKey)
     {
-        return $this->authKey === $authKey;
+        return $this->password === $authKey;
+    }
+
+    public static function findByEmail(string $email): User
+    {
+        return static::findOne(['email' => $email, 'verify' => self::STATUS_VERIFIED]);
+    }
+
+    public static function getPassHash(string $password): string
+    {
+        return Yii::$app->getSecurity()->generatePasswordHash($password);
+    }
+
+    public static function validatePass(string $password, string $passwordHash): bool
+    {
+        return Yii::$app->security->validatePassword($password, $passwordHash);
     }
 
 }

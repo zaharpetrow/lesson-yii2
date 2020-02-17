@@ -9,9 +9,9 @@ class PassValidator extends Validator
 {
 
     public $passPatterns = [
-        '/[A-ZА-Я]/u',
-        '/[a-zа-я]/u',
-        '/[0-9]/u',
+        '[A-ZА-Я]',
+        '[a-zа-я]',
+        '[0-9]',
     ];
     public $message;
 
@@ -19,7 +19,7 @@ class PassValidator extends Validator
     {
         $message = $this->getMessage();
         foreach ($this->passPatterns as $pattern) {
-            if (!preg_match($pattern, $model->$attribute)) {
+            if (!preg_match("~$pattern~u", $model->$attribute)) {
                 $model->addError($attribute, $message);
                 break;
             }
@@ -28,19 +28,18 @@ class PassValidator extends Validator
 
     public function clientValidateAttribute($model, $attribute, $view)
     {
-        $passPatterns = $this->passPatterns;
-        foreach ($passPatterns as $key => $pattern) {
-            $passPatterns[$key] = preg_replace('/u$/', '', $pattern);
-        }
         $message      = $this->json_encode($this->getMessage());
-        $passPatterns = $this->json_encode($passPatterns);
+        $passPatterns = $this->json_encode($this->passPatterns);
 
         return <<<JS
-        $.each($passPatterns, function (i, e) {
-            if ((value.match(e) || {}).length < 1) {
-                messages.push($message);
-            }
-        });
+        if(value.length > 0){
+            $.each($passPatterns, function (i, e) {
+                    e = new RegExp(e);
+                if (value.search(e) === -1) {
+                    messages.push($message);
+                }
+            });
+        }
 JS;
     }
 

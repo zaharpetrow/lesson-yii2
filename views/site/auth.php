@@ -55,7 +55,7 @@ $this->title = Yii::$app->name . " | " . Yii::t('app', 'Аутентификац
                     ?>
                     <?=
                             $formSignIn->field($modelSignIn, 'password')
-                            ->passwordInput(['class' => 'form-styling', 'value' => '11111zZ'])
+                            ->passwordInput(['class' => 'form-styling', 'value' => '1234Zz512'])
                             ->label(Yii::t('app', 'Пароль'))->error(['class' => 'help-block hidden'])
                     ?>
                     <?=

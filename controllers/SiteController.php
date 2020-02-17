@@ -2,11 +2,9 @@
 
 namespace app\controllers;
 
-use app\components\VerifyAccount;
 use app\models\auth\Auth;
 use app\models\auth\SignIn;
 use app\models\auth\SignUp;
-use app\models\Country;
 use app\models\EntryForm;
 use Yii;
 use yii\filters\AccessControl;

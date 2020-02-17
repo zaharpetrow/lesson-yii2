@@ -342,16 +342,16 @@ thead {
     padding: 10px 24px;
 }
 .btn-primary {
-    color: #fff;
-    background-color: #f5a623;
+    color: #f5a623;
+    background-color: transparent;
     border: 2px solid #f5a623;
     font-size: 90%;
     font-weight: 600;
 }
 .btn-primary:active,
 .btn-primary:hover {
-    color: #f5a623;
-    background-color: transparent;
+    color: #fff;
+    background-color: #f5a623;
     border: 2px solid #f5a623;
 }
 .custom-file-input {

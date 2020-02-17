@@ -3,7 +3,7 @@
 namespace app\models\auth;
 
 use app\components\helpers\UrlHelper;
-use app\components\validators\PassValidator;
+use app\components\validators\ValidateRules;
 use app\models\User;
 use app\models\UserOptions;
 use Yii;
@@ -39,23 +39,14 @@ abstract class Auth extends Model
                 'email',
                 'message' => 'Введите валидный E-mail',
             ],
-            [
-                ['password'],
-                'string',
-                'min'      => self::MIN_PASS,
-                'tooShort' => Yii::t('error', 
-                        "Пароль должен содержать минимум " . self::PLURAL_STR, 
-                        ['count' => self::MIN_PASS]),
-            ],
-            [
-                ['password'],
-                PassValidator::className(),
-            ],
         ];
 
-        return array_merge($this->createRequiredRules(['email', 'password']), 
-                $this->createTrimRules(['email', 'password']), 
-                $rules);
+        return array_merge(
+                ValidateRules::createRequiredRules($this->attributeLabels(), ['email', 'password']), 
+                ValidateRules::createTrimRules(['email', 'password']), 
+                ValidateRules::getPasswordRules(), 
+                $rules
+                );
     }
 
     public function attributeLabels()
@@ -64,34 +55,6 @@ abstract class Auth extends Model
             'email'    => Yii::t('app', 'E-mail'),
             'password' => Yii::t('app', 'Пароль'),
         ];
-    }
-
-    protected function createRequiredRules(array $required = []): array
-    {
-        $resultArray = [];
-
-        foreach ($required as $item) {
-            $attrLabel     = $this->attributeLabels()[$item];
-            $requiredItem  = (isset($attrLabel)) ? mb_strtolower($attrLabel) : $item;
-            $resultArray[] = [
-                [$item],
-                'required',
-                'message' => Yii::t('error', "Пожалуйста, введите $requiredItem")
-            ];
-        }
-
-        return $resultArray;
-    }
-
-    protected function createTrimRules(array $itens = []): array
-    {
-        $resultArray = [];
-
-        foreach ($itens as $item) {
-            $resultArray[] = [[$item], 'trim'];
-        }
-
-        return $resultArray;
     }
 
     /**
@@ -118,20 +81,11 @@ abstract class Auth extends Model
         return $result;
     }
 
-    protected function getUser(): User
-    {
-        if (empty($this->user)) {
-            $this->user = new User();
-        }
-
-        return $this->user;
-    }
-
     protected function checkUserOptions(User $user)
     {
-        $userOptions = UserOptions::find()->where(['user_id' => $user->id])->one();
+        $userOptions = UserOptions::findOne(['user_id' => $user->id]);
 
-        if ($userOptions === null) {
+        if (!$userOptions) {
             $userOptions          = new UserOptions();
             $userOptions->user_id = $user->id;
             $userOptions->save();

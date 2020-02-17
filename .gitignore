@@ -29,8 +29,11 @@ phpunit.phar
 tests/_output/*
 tests/_support/_generated
 
-#vagrant folder
+# vagrant folder
 /.vagrant
 
 # theme
 templatemo_524_product_admin
+
+# Users verify links
+/mail/verifyLinks.txt

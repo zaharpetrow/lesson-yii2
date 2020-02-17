@@ -1,0 +1,51 @@
+<?php
+
+namespace app\models\profile;
+
+use app\components\validators\ValidateRules;
+use app\models\User;
+use Yii;
+use yii\base\Model;
+
+class ProfileData extends Model
+{
+
+    public $name;
+    public $password;
+    public $passwordRepeat;
+
+    public function rules()
+    {
+        return array_merge(
+                ValidateRules::getNameRules(),
+                ValidateRules::getPasswordRules(),
+                ValidateRules::getPasswordRepeatRules(),
+                ValidateRules::createTrimRules($this->attributes())
+                );
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'name'           => Yii::t('app', 'Имя'),
+            'password'       => Yii::t('app', 'Новый пароль'),
+            'passwordRepeat' => Yii::t('app', 'Подтверждение пароля'),
+        ];
+    }
+
+    public function updateProfile()
+    {
+        $user = User::findOne(Yii::$app->user->id);
+
+        if ($this->name) {
+            $user->name = $this->name;
+        }
+
+        if ($this->password) {
+            $user->password = User::getPassHash($this->password);
+        }
+
+        $user->update();
+    }
+
+}

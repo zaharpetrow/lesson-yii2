@@ -4,6 +4,7 @@ namespace app\models\auth;
 
 use app\components\Avatar;
 use app\components\behaviors\AuthBehavior;
+use app\components\validators\ValidateRules;
 use app\models\User;
 use Yii;
 
@@ -13,7 +14,7 @@ class SignIn extends Auth
     const EVENT_AFTER_SIGN_IN = "afterSignIn";
 
     public $remember;
-    
+
     public function behaviors()
     {
         return [
@@ -29,9 +30,10 @@ class SignIn extends Auth
         ];
 
         $required = ['email', 'password'];
-        return array_merge($this->createTrimRules($required), 
+        return array_merge(
+                ValidateRules::createTrimRules($required), 
                 $rules, 
-                $this->createRequiredRules($required));
+                ValidateRules::createRequiredRules($required));
     }
 
     public function run(array $dataPost): array
@@ -39,10 +41,7 @@ class SignIn extends Auth
         $models = [];
 
         if ($this->load($dataPost) && $this->validate()) {
-            $user = $this->getUser()
-                    ->find()
-                    ->where(['email' => $this->email])
-                    ->one();
+            $user = User::findByEmail($this->email);
 
             if ($this->authValidate($user)) {
                 Yii::$app->user->login($user, $this->remember ? 3600 * 24 * 30 : 0);
@@ -63,7 +62,7 @@ class SignIn extends Auth
     protected function authValidate($user): bool
     {
         if ($user !== null && $user instanceof User && $user->validate()) {
-            if (Yii::$app->security->validatePassword($this->password, $user->password)) {
+            if (User::validatePass($this->password, $user->password)) {
                 $this->checkUserOptions($user);
                 return true;
             }

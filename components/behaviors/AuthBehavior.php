@@ -12,16 +12,29 @@ class AuthBehavior extends Behavior
     public function events()
     {
         return [
-            SignIn::EVENT_AFTER_SIGN_IN => 'userDirExists',
+            SignIn::EVENT_AFTER_SIGN_IN => 'afterSignIn',
         ];
     }
 
-    public function userDirExists()
+    public function afterSignIn()
     {
-        $dirName = UrlHelper::profileUserRoot();
+        $this->userDirectoriesExists();
+    }
 
-        if (!file_exists($dirName)) {
-            mkdir($dirName);
+    public function userDirectoriesExists()
+    {
+        $this->checkFiles([
+            UrlHelper::profileUserRoot(),
+            UrlHelper::avatarUserRoot(),
+        ]);
+    }
+
+    protected function checkFiles(array $files)
+    {
+        foreach ($files as $file) {
+            if (!file_exists($file)) {
+                mkdir($file);
+            }
         }
     }
 

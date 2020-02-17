@@ -4,6 +4,7 @@ namespace app\components;
 
 use app\components\helpers\UrlHelper;
 use Exception;
+use Imagine\Image\Box;
 use Yii;
 use yii\imagine\Image;
 
@@ -45,8 +46,21 @@ class Avatar
 
     public static function getThumbnail(): string
     {
-
         return static::getIcon(static::THUMB);
+    }
+
+    public static function transformToSquareImage(string $filePath)
+    {
+        $img  = Image::getImagine()->open($filePath);
+        $size = $img->getSize();
+
+        if ($size->getHeight() > $size->getWidth()) {
+            $squareSide = $size->getWidth();
+        } else {
+            $squareSide = $size->getHeight();
+        }
+
+        Image::thumbnail($filePath, $squareSide, $squareSide)->save($filePath);
     }
 
     protected static function getIcon(array $iconOptions): string
@@ -72,10 +86,8 @@ class Avatar
     {
         if (static::userImageExists()) {
             static::$options['imgName']   = Yii::$app->user->identity->userOptions->img;
-            static::$options['pathToImg'] = UrlHelper::profileRoot()
-                    . '/' . Yii::$app->user->identity->userOptions->dir_name;
-            static::$options['urlToImg']  = UrlHelper::profileWeb()
-                    . '/' . Yii::$app->user->identity->userOptions->dir_name;
+            static::$options['pathToImg'] = UrlHelper::avatarUserRoot();
+            static::$options['urlToImg']  = UrlHelper::avatarUserWeb();
         } else {
             static::$options['imgName']   = static::DEFAULT_AVATAR;
             static::$options['pathToImg'] = UrlHelper::profileRoot();
@@ -87,10 +99,9 @@ class Avatar
 
     protected static function createIcon(array $options)
     {
-        Image::thumbnail(
-                        $options['imagePath'], $options['width'], $options['height']
-                )
-                ->save($options['newFilePath']);
+        $img = Image::getImagine()->open($options['imagePath']);
+        $box = new Box($options['width'], $options['height']);
+        $img->resize($box)->save($options['newFilePath']);
     }
 
     protected static function userImageExists(): bool
@@ -104,7 +115,7 @@ class Avatar
         }
 
         if ($imageName !== null &&
-                file_exists(UrlHelper::profileUserRoot() . "/$imageName")) {
+                file_exists(UrlHelper::avatarUserRoot() . "/$imageName")) {
             return true;
         }
         return false;

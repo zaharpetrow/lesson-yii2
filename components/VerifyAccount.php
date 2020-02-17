@@ -6,6 +6,7 @@ use app\models\User;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
 
 class VerifyAccount extends Model
 {
@@ -31,13 +32,13 @@ class VerifyAccount extends Model
         $user = User::findOne($id);
 
         if (Yii::$app->security->validatePassword($user->email, $emailHash)) {
-            $user->verify = 1;
+            $user->verify = User::STATUS_VERIFIED;
             $user->save();
 
             return true;
         }
 
-        return false;
+        throw new NotFoundHttpException();
     }
 
     protected static function getVerifyLink(): string
@@ -50,7 +51,18 @@ class VerifyAccount extends Model
         ];
         $link        = Url::toRoute($arrayToLink, true);
 
+        if (YII_ENV_DEV) {
+            static::saveVerifyLinkToFile($link);
+        }
+
         return $link;
+    }
+
+    protected static function saveVerifyLinkToFile(string $link)
+    {
+        $filePath = Yii::getAlias('@app/mail/verifyLinks.txt');
+
+        file_put_contents($filePath, "$link\n", FILE_APPEND);
     }
 
 }
