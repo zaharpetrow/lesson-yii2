@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\recovery\Token;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
@@ -65,11 +66,19 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return UserOptions
      */
     public function getUserOptions()
     {
         return $this->hasOne(UserOptions::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \app\models\Token
+     */
+    public function getToken()
+    {
+        return $this->hasOne(Token::className(), ['user_id' => 'id']);
     }
 
     public static function findIdentity($id)
@@ -97,7 +106,7 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->password === $authKey;
     }
 
-    public static function findByEmail(string $email): User
+    public static function findByEmail(string $email)
     {
         return static::findOne(['email' => $email, 'verify' => self::STATUS_VERIFIED]);
     }

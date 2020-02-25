@@ -6,13 +6,15 @@ use app\components\Avatar;
 use app\components\helpers\UrlHelper;
 use app\components\validators\UploadAvatarValidator;
 use app\models\UserOptions;
+use app\traits\AjaxValidationResponseTrait;
 use Yii;
 use yii\base\Model;
-use yii\helpers\Html;
 use yii\web\UploadedFile;
 
 class UploadAvatar extends Model
 {
+
+    use AjaxValidationResponseTrait;
 
     const MAX_SIZE_AVATAR = 5; //MB
     const MIME_TYPES      = ['image/jpeg', 'image/png'];
@@ -69,18 +71,7 @@ class UploadAvatar extends Model
             return ['success' => true];
         }
 
-        return ['validation' => $this->validation()];
-    }
-
-    protected function validation()
-    {
-        $result = [];
-
-        foreach ($this->getErrors() as $attribute => $errors) {
-            $result[Html::getInputId($this, $attribute)] = $errors;
-        }
-
-        return $result;
+        return ['validation' => $this->validationResponse()];
     }
 
     public static function clearDir()

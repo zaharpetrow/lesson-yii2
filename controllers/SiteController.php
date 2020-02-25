@@ -6,24 +6,28 @@ use app\models\auth\Auth;
 use app\models\auth\SignIn;
 use app\models\auth\SignUp;
 use app\models\EntryForm;
+use app\models\recovery\RecoveryPass;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 class SiteController extends Controller
 {
+
+    public static $authLayout = 'auth-layout';
 
     public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['entry', 'auth'],
+                'only'  => ['entry', 'auth', 'recovery'],
                 'rules' => [
                     [
                         'allow'   => true,
-                        'actions' => ['auth'],
+                        'actions' => ['auth', 'recovery'],
                         'roles'   => ['?'],
                     ],
                     [
@@ -33,7 +37,7 @@ class SiteController extends Controller
                     ],
                     [
                         'allow'        => false,
-                        'actions'      => ['auth'],
+                        'actions'      => ['auth', 'recovery'],
                         'roles'        => ['@'],
                         'denyCallback' => function($rule, $action) {
                             Yii::$app->response->redirect('/');
@@ -64,8 +68,11 @@ class SiteController extends Controller
 
     public function actionAuth()
     {
+        $this->layout = static::$authLayout;
+
         $modelSignIn = new SignIn();
         $modelSignUp = new SignUp();
+
         if (Yii::$app->request->isAjax) {
             $dataPost = Yii::$app->request->post();
             if (isset($dataPost[basename($modelSignIn::className())])) {
@@ -79,7 +86,28 @@ class SiteController extends Controller
             }
         }
 
-        return $this->renderPartial('auth', compact('modelSignIn', 'modelSignUp'));
+        return $this->render('auth', compact('modelSignIn', 'modelSignUp'));
+    }
+
+    public function actionRecovery()
+    {
+        $recoveryModel = new RecoveryPass();
+
+        $dataGet = Yii::$app->request->get();
+        if ($dataGet) {
+            if (!$recoveryModel->validateToken($dataGet)) {
+                throw new NotFoundHttpException();
+            }
+            Yii::$app->response->redirect('profile');
+        }
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $recoveryModel->recovery(Yii::$app->request->post());
+        }
+
+        $this->layout = static::$authLayout;
+        return $this->render('recovery', compact('recoveryModel'));
     }
 
 }

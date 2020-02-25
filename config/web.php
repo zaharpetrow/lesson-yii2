@@ -9,9 +9,11 @@ $config = [
     'basePath'       => dirname(__DIR__),
     'bootstrap'      => ['log'],
     'aliases'        => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
-        '@app'   => dirname(__DIR__),
+        '@bower'         => '@vendor/bower-asset',
+        '@npm'           => '@vendor/npm-asset',
+        '@app'           => dirname(__DIR__),
+        '@recoveryLinks' => '@app/mail/recoveryLinks.txt',
+        '@verifyLinks'   => '@app/mail/verifyLinks.txt',
     ],
     'sourceLanguage' => 'ru-RU',
     'language'       => 'ru-RU',
@@ -73,6 +75,7 @@ $config = [
             'rules'           => [
                 'triangular/<id:\d+>' => 'triangular/integer',
                 'auth'                => 'site/auth',
+                'recovery'            => 'site/recovery',
                 'logout'              => 'profile/logout',
             ],
         ],

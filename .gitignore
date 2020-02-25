@@ -35,5 +35,6 @@ tests/_support/_generated
 # theme
 templatemo_524_product_admin
 
-# Users verify links
+# Users links
 /mail/verifyLinks.txt
+/mail/recoveryLinks.txt

@@ -3,13 +3,15 @@
 namespace app\components;
 
 use app\models\User;
+use app\traits\SaveToFileTrait;
 use Yii;
-use yii\base\Model;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
-class VerifyAccount extends Model
+class VerifyAccount
 {
+
+    use SaveToFileTrait;
 
     protected static $email;
 
@@ -17,6 +19,10 @@ class VerifyAccount extends Model
     {
         self::$email = $email;
         $link        = self::getVerifyLink();
+
+        if (YII_ENV_DEV) {
+            static::saveToFile($link, Yii::getAlias('@verifyLinks'));
+        }
 
         Yii::$app->mailer->compose()
                 ->setFrom(Yii::$app->params['senderEmail'])
@@ -31,7 +37,7 @@ class VerifyAccount extends Model
     {
         $user = User::findOne($id);
 
-        if (Yii::$app->security->validatePassword($user->email, $emailHash)) {
+        if (User::validatePass($user->email, $emailHash)) {
             $user->verify = User::STATUS_VERIFIED;
             $user->save();
 
@@ -47,22 +53,11 @@ class VerifyAccount extends Model
         $arrayToLink = [
             'profile/verification',
             'id'   => $user->id,
-            'hash' => Yii::$app->security->generatePasswordHash($user->email),
+            'hash' => User::getPassHash($user->email),
         ];
         $link        = Url::toRoute($arrayToLink, true);
 
-        if (YII_ENV_DEV) {
-            static::saveVerifyLinkToFile($link);
-        }
-
         return $link;
-    }
-
-    protected static function saveVerifyLinkToFile(string $link)
-    {
-        $filePath = Yii::getAlias('@app/mail/verifyLinks.txt');
-
-        file_put_contents($filePath, "$link\n", FILE_APPEND);
     }
 
 }

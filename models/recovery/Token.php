@@ -1,20 +1,21 @@
 <?php
 
-namespace app\models;
+namespace app\models\recovery;
 
+use app\models\User;
 use Yii;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "user_options".
+ * This is the model class for table "token".
  *
- * @property int $id
  * @property int $user_id
- * @property string $dir_name
+ * @property string|null $token
+ * @property int|null $created_at
  *
  * @property User $user
  */
-class UserOptions extends ActiveRecord
+class Token extends ActiveRecord
 {
 
     /**
@@ -22,7 +23,7 @@ class UserOptions extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'user_options';
+        return 'token';
     }
 
     /**
@@ -31,10 +32,10 @@ class UserOptions extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'dir_name'], 'required'],
-            [['user_id'], 'integer'],
-            [['dir_name'], 'string', 'max' => 255],
-            [['img'], 'string', 'max' => 255],
+            [['user_id'], 'required'],
+            [['user_id', 'created_at'], 'integer'],
+            [['token'], 'string', 'max' => 255],
+            [['user_id'], 'unique'],
             [
                 ['user_id'],
                 'exist',
@@ -51,10 +52,9 @@ class UserOptions extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'       => Yii::t('app', 'ID'),
-            'user_id'  => Yii::t('app', 'User ID'),
-            'dir_name' => Yii::t('app', 'Dir Name'),
-            'img'      => Yii::t('app', 'Image'),
+            'user_id'    => Yii::t('app', 'User ID'),
+            'token'      => Yii::t('app', 'Token'),
+            'created_at' => Yii::t('app', 'Created At'),
         ];
     }
 
@@ -64,6 +64,11 @@ class UserOptions extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public static function createToken(): string
+    {
+        return Yii::$app->security->generateRandomString();
     }
 
 }

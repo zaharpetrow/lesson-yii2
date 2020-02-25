@@ -66,6 +66,8 @@ $(function () {
                     signinSuccess(data.success);
                 } else if ($yiiform.hasClass('form-signup')) {
                     signupSuccess();
+                } else if ($yiiform.hasClass('form-recovery')) {
+                    recoverySuccess();
                 }
             } else if (data.validation) {
 //                server validation failed
@@ -83,7 +85,13 @@ $(function () {
             $(".form-signup-left").toggleClass("form-signup-down");
             $(".success").toggleClass("success-left");
             $("#check").addClass('checked');
-//          $(".frame").toggleClass("frame-short");
+            $(".btn-goback").toggleClass("btn-goback-signup");
+        }
+
+        function recoverySuccess() {
+            $(".form-recovery").toggleClass("form-signup-down");
+            $(".success").toggleClass("success-left");
+            $("#check").addClass('checked');
             $(".btn-goback").toggleClass("btn-goback-signup");
         }
 
