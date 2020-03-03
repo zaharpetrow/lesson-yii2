@@ -12,6 +12,14 @@ modules:
     config:
         Yii2:
             configFile: 'config/test.php'
+        Db:
+            dsn: 'mysql:host=localhost;dbname=yii2_basic_tests'
+            user: 'root'
+            password: 
+            dump: 'tests/_data/dump.sql'
+#            populate: true
+#            cleanup: true
+#            reconnect: true
 
 # To enable code coverage:
 #coverage:

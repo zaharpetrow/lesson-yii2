@@ -1,42 +1,48 @@
 <?php
+
 $params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/test_db.php';
+$db     = require __DIR__ . '/test_db.php';
 
 /**
  * Application configuration shared by all test types
  */
 return [
-    'id' => 'basic-tests',
-    'basePath' => dirname(__DIR__),
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+    'id'             => 'basic-tests',
+    'basePath'       => dirname(__DIR__),
+    'aliases'        => [
+        '@bower'         => '@vendor/bower-asset',
+        '@npm'           => '@vendor/npm-asset',
+        '@app'           => dirname(__DIR__),
+        '@recoveryLinks' => '@app/mail/recoveryLinks.txt',
+        '@verifyLinks'   => '@app/mail/verifyLinks.txt',
     ],
-    'language' => 'en-US',
-    'components' => [
-        'db' => $db,
-        'mailer' => [
+    'sourceLanguage' => 'ru-RU',
+    'language'       => 'ru-RU',
+    'components'     => [
+        'db'           => $db,
+        'mailer'       => [
             'useFileTransport' => true,
         ],
         'assetManager' => [
             'basePath' => __DIR__ . '/../web/assets',
         ],
-        'urlManager' => [
+        'urlManager'   => [
             'showScriptName' => true,
         ],
-        'user' => [
+        'user'         => [
             'identityClass' => 'app\models\User',
+            'loginUrl'      => ['/auth'],
         ],
-        'request' => [
-            'cookieValidationKey' => 'test',
+        'request'      => [
+            'cookieValidationKey'  => 'test',
             'enableCsrfValidation' => false,
-            // but if you absolutely need it set cookie domain to localhost
-            /*
-            'csrfCookie' => [
-                'domain' => 'localhost',
-            ],
-            */
+        // but if you absolutely need it set cookie domain to localhost
+        /*
+          'csrfCookie' => [
+          'domain' => 'localhost',
+          ],
+         */
         ],
     ],
-    'params' => $params,
+    'params'         => $params,
 ];

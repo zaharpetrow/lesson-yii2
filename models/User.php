@@ -16,6 +16,9 @@ use yii\web\IdentityInterface;
  * @property string $password
  * @property string $img
  * @property int $verify
+ * 
+ * @property UserOptions $userOptions
+ * @property Token $token
  */
 class User extends ActiveRecord implements IdentityInterface
 {
