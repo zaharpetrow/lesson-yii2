@@ -35,6 +35,7 @@ class UserOptions extends ActiveRecord
             [['user_id'], 'integer'],
             [['dir_name'], 'string', 'max' => 255],
             [['img'], 'string', 'max' => 255],
+            [['user_id'], 'unique'],
             [
                 ['user_id'],
                 'exist',

@@ -23,7 +23,10 @@ class TokenTest extends Unit
         expect($token->getErrors())->hasKey('user_id');
         expect($token->getErrors())->hasntKey('token');
         expect($token->getErrors())->hasntKey('created_at');
+    }
 
+    public function testValidateCorrectValues()
+    {
         $token             = new Token();
         $token->user_id    = 16;
         $token->token      = $token->createToken();
@@ -38,14 +41,10 @@ class TokenTest extends Unit
         $token = new Token();
 
         expect_that(User::findOne(8));
-        $token->user_id    = 8;
-        $token->token      = $token->createToken();
-        $token->created_at = time();
+        $token->user_id = 8;
 
         $token->validate();
         expect($token->getErrors())->hasKey('user_id');
-        expect($token->getErrors())->hasntKey('token');
-        expect($token->getErrors())->hasntKey('created_at');
 
         $token->user_id = 18;
 
