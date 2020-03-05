@@ -19,6 +19,14 @@ return [
     'sourceLanguage' => 'ru-RU',
     'language'       => 'ru-RU',
     'components'     => [
+        'i18n'         => [
+            'translations' => [
+                '*' => [
+                    'class'    => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages',
+                ],
+            ],
+        ],
         'db'           => $db,
         'mailer'       => [
             'useFileTransport' => true,
@@ -28,6 +36,16 @@ return [
         ],
         'urlManager'   => [
             'showScriptName' => true,
+            'normalizer'     => [
+                'class'  => 'yii\web\UrlNormalizer',
+                'action' => yii\web\UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
+            ],
+            'rules'          => [
+                'triangular/<id:\d+>' => 'triangular/integer',
+                'auth'                => 'site/auth',
+                'recovery'            => 'site/recovery',
+                'logout'              => 'profile/logout',
+            ],
         ],
         'user'         => [
             'identityClass' => 'app\models\User',

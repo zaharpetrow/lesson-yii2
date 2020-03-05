@@ -51,7 +51,7 @@ class VerifyAccount
     {
         $user        = User::find()->where(['email' => self::$email])->one();
         $arrayToLink = [
-            'profile/verification',
+            '/profile/verification',
             'id'   => $user->id,
             'hash' => User::getPassHash($user->email),
         ];
