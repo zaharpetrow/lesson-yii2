@@ -53,6 +53,7 @@ return [
         ],
         'request'      => [
             'cookieValidationKey'  => 'test',
+            'scriptFile'           => dirname(__DIR__) . '/web/index-test.php',
             'enableCsrfValidation' => false,
         // but if you absolutely need it set cookie domain to localhost
         /*

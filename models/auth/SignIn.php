@@ -33,7 +33,7 @@ class SignIn extends Auth
         return array_merge(
                 ValidateRules::createTrimRules($required), 
                 $rules, 
-                ValidateRules::createRequiredRules($required));
+                ValidateRules::createRequiredRules($this->attributeLabels(), $required));
     }
 
     public function run(array $dataPost): array
