@@ -10,7 +10,6 @@ use app\models\recovery\RecoveryPass;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 class SiteController extends Controller
@@ -95,9 +94,7 @@ class SiteController extends Controller
 
         $dataGet = Yii::$app->request->get();
         if ($dataGet) {
-            if (!$recoveryModel->validateToken($dataGet)) {
-                throw new NotFoundHttpException();
-            }
+            $recoveryModel->loginToken($dataGet);
             Yii::$app->response->redirect('profile');
         }
 

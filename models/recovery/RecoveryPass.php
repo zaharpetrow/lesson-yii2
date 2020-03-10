@@ -10,6 +10,7 @@ use app\traits\AjaxValidationResponseTrait;
 use app\traits\SaveToFileTrait;
 use Yii;
 use yii\base\Model;
+use yii\web\NotFoundHttpException;
 
 class RecoveryPass extends Model
 {
@@ -50,13 +51,16 @@ class RecoveryPass extends Model
 
     public function validateToken(array $data): bool
     {
+        if (!isset($data['id']) && !isset($data['token'])) {
+            return false;
+        }
+
         $this->token = Token::findOne([
                     'user_id' => $data['id'],
                     'token'   => $data['token']
         ]);
 
         if ($this->token && $this->token->created_at + 1800 > time()) {
-            $this->loginToken();
             return true;
         }
         if ($this->token) {
@@ -65,8 +69,11 @@ class RecoveryPass extends Model
         return false;
     }
 
-    public function loginToken()
+    public function loginToken(array $data)
     {
+        if (!$this->validateToken($data)) {
+            throw new NotFoundHttpException();
+        }
         Yii::$app->user->login($this->token->user);
         $this->token->delete();
         $this->trigger(SignIn::EVENT_AFTER_SIGN_IN);
@@ -114,7 +121,7 @@ class RecoveryPass extends Model
     public function getRecoveryLink(): string
     {
         $arrayToLink = [
-            'site/recovery',
+            '/site/recovery',
             'id'    => $this->token->user_id,
             'token' => $this->token->token,
         ];
