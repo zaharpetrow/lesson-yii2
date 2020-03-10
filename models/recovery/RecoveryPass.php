@@ -4,7 +4,6 @@ namespace app\models\recovery;
 
 use app\components\behaviors\AuthBehavior;
 use app\components\helpers\UrlHelper;
-use app\components\validators\EmailExistValidator;
 use app\models\auth\SignIn;
 use app\models\User;
 use app\traits\AjaxValidationResponseTrait;
@@ -42,7 +41,9 @@ class RecoveryPass extends Model
             ['email', 'email'],
             [
                 ['email'],
-                EmailExistValidator::className(),
+                'exist',
+                'targetClass' => User::className(),
+                'message'     => Yii::t('error/app', 'Email не существует!'),
             ],
         ];
     }
