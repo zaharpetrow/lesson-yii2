@@ -16,12 +16,7 @@ class ProfileData extends Model
 
     public function rules()
     {
-        return array_merge(
-                ValidateRules::getNameRules(),
-                ValidateRules::getPasswordRules(),
-                ValidateRules::getPasswordRepeatRules(),
-                ValidateRules::createTrimRules($this->attributes())
-                );
+        return ValidateRules::getUpdateProfileRules();
     }
 
     public function attributeLabels()

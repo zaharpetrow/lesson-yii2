@@ -39,6 +39,7 @@ abstract class Auth extends Model
                 'email',
                 'message' => 'Введите валидный E-mail',
             ],
+            [['email', 'password'], 'string'],
         ];
 
         return array_merge(

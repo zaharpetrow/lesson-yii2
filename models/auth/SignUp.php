@@ -15,28 +15,13 @@ class SignUp extends Auth
 
     public function rules()
     {
-        $rules = [
-            [
-                'email',
-                'unique',
-                'targetClass' => 'app\models\User',
-                'message'     => Yii::t('error', 'Такой Email уже существует!'),
-            ],
-        ];
-
-        return array_merge(
-                parent::rules(),
-                ValidateRules::getNameRules(),
-                $rules,
-                ValidateRules::getPasswordRepeatRules(),
-                ValidateRules::createRequiredRules($this->attributeLabels(), ['name', 'passwordRepeat']),
-                ValidateRules::createTrimRules($this->attributes()));
+        return array_merge(parent::rules(), ValidateRules::getSignUpRules());
     }
 
     public function attributeLabels()
     {
         $attrLabels = [
-            'name'          => Yii::t('app', 'Имя'),
+            'name'           => Yii::t('app', 'Имя'),
             'passwordRepeat' => Yii::t('app', 'Подтверждение пароля'),
         ];
 

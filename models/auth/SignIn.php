@@ -24,16 +24,7 @@ class SignIn extends Auth
 
     public function rules()
     {
-        $rules = [
-            [['email', 'password'], 'string'],
-            [['remember'], 'boolean']
-        ];
-
-        $required = ['email', 'password'];
-        return array_merge(
-                ValidateRules::createTrimRules($required), 
-                $rules, 
-                ValidateRules::createRequiredRules($this->attributeLabels(), $required));
+        return array_merge(parent::rules(), ValidateRules::getSignInRules());
     }
 
     public function run(array $dataPost): array

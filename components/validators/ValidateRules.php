@@ -3,10 +3,54 @@
 namespace app\components\validators;
 
 use app\models\auth\Auth;
+use app\models\auth\SignUp;
+use app\models\profile\ProfileData;
 use Yii;
 
 class ValidateRules
 {
+
+    public static function getSignUpRules(): array
+    {
+        $signup = new SignUp();
+
+        $rules = [
+            [
+                'email',
+                'unique',
+                'targetClass' => 'app\models\User',
+                'message'     => Yii::t('error', 'Такой Email уже существует!'),
+            ],
+        ];
+
+        return array_merge(
+                ValidateRules::getNameRules(),
+                $rules,
+                ValidateRules::getPasswordRepeatRules(),
+                ValidateRules::createRequiredRules($signup->attributeLabels(), ['name', 'passwordRepeat']),
+                ValidateRules::createTrimRules($signup->attributes()));
+    }
+
+    public static function getSignInRules(): array
+    {
+        $rules = [
+            [['remember'], 'boolean']
+        ];
+
+        return $rules;
+    }
+
+    public static function getUpdateProfileRules(): array
+    {
+        $profileData = new ProfileData();
+
+        return array_merge(
+                ValidateRules::getNameRules(),
+                ValidateRules::getPasswordRules(),
+                ValidateRules::getPasswordRepeatRules(),
+                ValidateRules::createTrimRules($profileData->attributes())
+                );
+    }
 
     public static function getNameRules(): array
     {
@@ -37,8 +81,8 @@ class ValidateRules
             [
                 ['password'],
                 'string',
-                'min'         => Auth::MIN_PASS,
-                'tooShort'    => Yii::t('error', "Пароль должен содержать минимум "
+                'min'      => Auth::MIN_PASS,
+                'tooShort' => Yii::t('error', "Пароль должен содержать минимум "
                         . Auth::PLURAL_STR, ['count' => Auth::MIN_PASS]),
             ],
             [
