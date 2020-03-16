@@ -6,6 +6,7 @@ use app\components\validators\ValidateRules;
 use app\models\User;
 use Yii;
 use yii\base\Model;
+use yii\web\UnauthorizedHttpException;
 
 class ProfileData extends Model
 {
@@ -30,6 +31,10 @@ class ProfileData extends Model
 
     public function updateProfile()
     {
+        if (Yii::$app->user->isGuest) {
+            throw new UnauthorizedHttpException('Пользователь не авторизован');
+        }
+
         $user = User::findOne(Yii::$app->user->id);
 
         if ($this->name) {

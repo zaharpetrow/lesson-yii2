@@ -84,6 +84,10 @@ class Avatar
 
     protected function getDataImg(): array
     {
+        if (Yii::$app->user->isGuest) {
+            throw new UnauthorizedHttpException('Пользователь не авторизован');
+        }
+
         if (static::userImageExists()) {
             static::$options['imgName']   = Yii::$app->user->identity->userOptions->img;
             static::$options['pathToImg'] = UrlHelper::avatarUserRoot();
