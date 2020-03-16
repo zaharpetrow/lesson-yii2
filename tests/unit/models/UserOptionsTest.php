@@ -7,72 +7,75 @@ use app\models\UserOptions;
 use Codeception\Test\Unit;
 use Yii;
 
+/**
+ * @property UserOptions $userOpt
+ */
 class UserOptionsTest extends Unit
 {
 
+    public $userOpt;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->userOpt = new UserOptions();
+    }
+
     public function testValidateEmptyValues()
     {
-        $userOpt = new UserOptions();
-        $userOpt->validate();
+        $this->userOpt->validate();
 
-        expect($userOpt->getErrors())->hasKey('user_id');
-        expect($userOpt->getErrors())->hasKey('dir_name');
-        expect($userOpt->getErrors())->hasntKey('img');
+        expect($this->userOpt->getErrors())->hasKey('user_id');
+        expect($this->userOpt->getErrors())->hasKey('dir_name');
+        expect($this->userOpt->getErrors())->hasntKey('img');
     }
 
     public function testValidateCorrectValues()
     {
-        $userOpt           = new UserOptions();
-        $userOpt->user_id  = 18;
-        $userOpt->dir_name = Yii::$app->security->generateRandomString();
-        $userOpt->img      = Yii::$app->security->generateRandomString();
+        $this->userOpt->user_id  = 18;
+        $this->userOpt->dir_name = Yii::$app->security->generateRandomString();
+        $this->userOpt->img      = Yii::$app->security->generateRandomString();
 
-        $userOpt->validate();
-        expect_not($userOpt->getErrors());
+        $this->userOpt->validate();
+        expect_not($this->userOpt->getErrors());
     }
 
     public function testUniqueUserId()
     {
-        $userOpt = new UserOptions();
-
         expect_that(User::findOne(8));
-        $userOpt->user_id = 8;
+        $this->userOpt->user_id = 8;
 
-        $userOpt->validate();
-        expect($userOpt->getErrors())->hasKey('user_id');
+        $this->userOpt->validate();
+        expect($this->userOpt->getErrors())->hasKey('user_id');
 
-        $userOpt->user_id = 18;
+        $this->userOpt->user_id = 18;
 
-        $userOpt->validate();
-        expect($userOpt->getErrors())->hasntKey('user_id');
+        $this->userOpt->validate();
+        expect($this->userOpt->getErrors())->hasntKey('user_id');
     }
 
     public function testExistUser()
     {
-        $userOpt = new UserOptions();
+        $this->userOpt->user_id = 99;
 
-        $userOpt->user_id = 99;
+        $this->userOpt->validate();
+        expect($this->userOpt->getErrors())->hasKey('user_id');
 
-        $userOpt->validate();
-        expect($userOpt->getErrors())->hasKey('user_id');
+        $this->userOpt->user_id = 18;
 
-        $userOpt->user_id = 18;
-
-        $userOpt->validate();
-        expect($userOpt->getErrors())->hasntKey('user_id');
+        $this->userOpt->validate();
+        expect($this->userOpt->getErrors())->hasntKey('user_id');
     }
 
     public function testUser()
     {
-        $userOpt = new UserOptions();
+        $this->userOpt->user_id = 99;
 
-        $userOpt->user_id = 99;
+        expect_not($this->userOpt->user);
 
-        expect_not($userOpt->user);
+        $this->userOpt->user_id = 8;
 
-        $userOpt->user_id = 8;
-
-        expect_that($userOpt->user);
+        expect_that($this->userOpt->user);
     }
 
 }

@@ -9,13 +9,20 @@ use app\tests\unit\fixtures\TokenFixture;
 use Yii;
 use yii\codeception\DbTestCase;
 
-//use Codeception\Test\Unit;
-
 /**
  * @property TokenFixture $tokens
+ * @property RecoveryPass $rPass
  */
 class RecoveryPassTest extends DbTestCase
 {
+
+    public $rPass;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->rPass = new RecoveryPass();
+    }
 
     public function fixtures()
     {
@@ -26,21 +33,18 @@ class RecoveryPassTest extends DbTestCase
 
     public function testValidateCorrectValues()
     {
-        $rPass = new RecoveryPass();
-
-        $rPass->email = 'gregory@gmail.com';
-        $rPass->validate();
+        $this->rPass->email = 'gregory@gmail.com';
+        $this->rPass->validate();
 
         expect_that(User::findByEmail('gregory@gmail.com'));
-        expect($rPass->getErrors())->hasntKey('email');
+        expect($this->rPass->getErrors())->hasntKey('email');
     }
 
     public function testValidateEmptyValues()
     {
-        $rPass = new RecoveryPass();
-        $rPass->validate();
+        $this->rPass->validate();
 
-        expect($rPass->getErrors())->hasKey('email');
+        expect($this->rPass->getErrors())->hasKey('email');
     }
 
     /**
@@ -48,12 +52,10 @@ class RecoveryPassTest extends DbTestCase
      */
     public function testValidateWrongValues($email)
     {
-        $rPass = new RecoveryPass();
+        $this->rPass->email = $email;
+        $this->rPass->validate();
 
-        $rPass->email = $email;
-        $rPass->validate();
-
-        expect($rPass->getErrors())->hasKey('email');
+        expect($this->rPass->getErrors())->hasKey('email');
     }
 
     public function getWrongValues()
@@ -70,66 +72,61 @@ class RecoveryPassTest extends DbTestCase
 
     public function testRecovery()
     {
-        $rPass = new RecoveryPass();
         expect_that(User::findByEmail('gregory@gmail.com'));
 
 
 
         $data = [
-            basename($rPass::className()) => [
+            basename($this->rPass::className()) => [
                 'email' => 'gregory@gmail.com',
             ],
         ];
 
-        $response = $rPass->recovery($data);
-        expect($rPass->getErrors())->hasntKey('email');
+        $response = $this->rPass->recovery($data);
+        expect($this->rPass->getErrors())->hasntKey('email');
         expect($response)->hasntKey('validation');
         expect($response)->hasKey('success');
 
 
 
         $data     = [
-            basename($rPass::className()) => [
+            basename($this->rPass::className()) => [
                 'email' => 'false-email@gmail.com',
             ],
         ];
-        $response = $rPass->recovery($data);
-        expect($rPass->hasErrors())->true();
-        expect($rPass->getErrors())->hasKey('email');
+        $response = $this->rPass->recovery($data);
+        expect($this->rPass->hasErrors())->true();
+        expect($this->rPass->getErrors())->hasKey('email');
         expect($response)->hasntKey('success');
         expect($response)->hasKey('validation');
     }
 
     public function testValidateDataGet()
     {
-        $rPass = new RecoveryPass();
-
         $data = [
             'id'    => $this->tokens[0]['user_id'],
             'token' => $this->tokens[0]['token'],
         ];
 
-        expect($rPass->validateToken($data))->true();
+        expect($this->rPass->validateToken($data))->true();
 
         $data = [
             'id'    => $this->tokens[1]['user_id'],
             'token' => $this->tokens[1]['token'],
         ];
 
-        expect($rPass->validateToken($data))->false();
+        expect($this->rPass->validateToken($data))->false();
     }
 
     public function testLoginToken()
     {
-        $rPass = new RecoveryPass();
-
         $data = [
             'id'    => $this->tokens[0]['user_id'],
             'token' => $this->tokens[0]['token'],
         ];
 
         expect(Token::findOne(['user_id' => 16]));
-        $rPass->loginToken($data);
+        $this->rPass->loginToken($data);
         expect(Yii::$app->user->identity);
         expect_not(Token::findOne(['user_id' => 16]));
     }
@@ -139,14 +136,12 @@ class RecoveryPassTest extends DbTestCase
      */
     public function testErrorLoginToken()
     {
-        $rPass = new RecoveryPass();
-
         $data = [
             'not id'    => $this->tokens[0]['user_id'],
             'not token' => $this->tokens[0]['token'],
         ];
 
-        $rPass->loginToken($data);
+        $this->rPass->loginToken($data);
     }
 
 }

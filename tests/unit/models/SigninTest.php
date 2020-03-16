@@ -7,58 +7,64 @@ use app\models\User;
 use Codeception\Test\Unit;
 use Yii;
 
+/**
+ * @property SignIn $signin
+ */
 class SigninTest extends Unit
 {
 
+    public $signin;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->signin = new SignIn();
+    }
+
     public function testValidateCorrectValues()
     {
-        $signin = new SignIn();
+        $this->signin->email    = 'poul@ya.ru';
+        $this->signin->password = 'truePass2';
+        $this->signin->remember = false;
+        $this->signin->validate();
 
-        $signin->email    = 'poul@ya.ru';
-        $signin->password = 'truePass2';
-        $signin->remember = false;
-        $signin->validate();
-
-        expect($signin->getErrors())->hasntKey('email');
-        expect($signin->getErrors())->hasntKey('password');
+        expect($this->signin->getErrors())->hasntKey('email');
+        expect($this->signin->getErrors())->hasntKey('password');
+        expect($this->signin->getErrors())->hasntKey('remember');
     }
 
     public function testValidateEmptyValues()
     {
-        $signin = new SignIn();
-        $signin->validate();
+        $this->signin->validate();
 
-        expect($signin->getErrors())->hasKey('email');
-        expect($signin->getErrors())->hasKey('password');
+        expect($this->signin->getErrors())->hasKey('email');
+        expect($this->signin->getErrors())->hasKey('password');
     }
 
     public function testValidateWrongValues()
     {
-        $signin = new SignIn();
+        $this->signin->remember = 'asd';
+        $this->signin->validate();
 
-        $signin->remember = 'asd';
-        $signin->validate();
-
-        expect($signin->getErrors())->hasKey('remember');
+        expect($this->signin->getErrors())->hasKey('remember');
     }
 
     public function testLogin()
     {
-        $signin = new SignIn();
         expect_that(User::findByEmail('gregory@gmail.com'));
 
 
 
         $data = [
-            basename($signin::className()) => [
+            basename($this->signin::className()) => [
                 'email'    => 'gregory@gmail.com',
                 'password' => '1234Zz512',
             ],
         ];
 
-        $response = $signin->run($data);
-        expect($signin->getErrors())->hasntKey('email');
-        expect($signin->getErrors())->hasntKey('password');
+        $response = $this->signin->run($data);
+        expect($this->signin->getErrors())->hasntKey('email');
+        expect($this->signin->getErrors())->hasntKey('password');
         expect($response)->hasntKey('validation');
         expect($response)->hasKey('success');
         expect_that(Yii::$app->user->identity);
@@ -67,15 +73,15 @@ class SigninTest extends Unit
 
 
         $data     = [
-            basename($signin::className()) => [
+            basename($this->signin::className()) => [
                 'email'    => 'gregory@gmail.com',
                 'password' => 'FalsePass123',
             ],
         ];
-        $response = $signin->run($data);
-        expect($signin->hasErrors())->true();
-        expect($signin->getErrors())->hasKey('email');
-        expect($signin->getErrors())->hasKey('password');
+        $response = $this->signin->run($data);
+        expect($this->signin->hasErrors())->true();
+        expect($this->signin->getErrors())->hasKey('email');
+        expect($this->signin->getErrors())->hasKey('password');
         expect($response)->hasntKey('success');
         expect($response)->hasKey('validation');
         expect_not(Yii::$app->user->identity);
@@ -83,15 +89,15 @@ class SigninTest extends Unit
 
 
         $data     = [
-            basename($signin::className()) => [
+            basename($this->signin::className()) => [
                 'email'    => 'false-email@gmail.com',
                 'password' => '1234Zz512',
             ],
         ];
-        $response = $signin->run($data);
-        expect($signin->hasErrors())->true();
-        expect($signin->getErrors())->hasKey('email');
-        expect($signin->getErrors())->hasKey('password');
+        $response = $this->signin->run($data);
+        expect($this->signin->hasErrors())->true();
+        expect($this->signin->getErrors())->hasKey('email');
+        expect($this->signin->getErrors())->hasKey('password');
         expect($response)->hasntKey('success');
         expect($response)->hasKey('validation');
         expect_not(Yii::$app->user->identity);

@@ -6,78 +6,80 @@ use app\models\recovery\Token;
 use app\models\User;
 use Codeception\Test\Unit;
 
+/**
+ * @property Token $token
+ */
 class TokenTest extends Unit
 {
 
+    public $token;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->token = new Token();
+    }
+
     public function testCreateToken()
     {
-        $token = new Token();
-        expect(mb_strlen($token->createToken()) > 10)->true();
+        expect(mb_strlen($this->token->createToken()) === 32)->true();
     }
 
     public function testValidateEmptyValues()
     {
-        $token = new Token();
-        $token->validate();
+        $this->token->validate();
 
-        expect($token->getErrors())->hasKey('user_id');
-        expect($token->getErrors())->hasntKey('token');
-        expect($token->getErrors())->hasntKey('created_at');
+        expect($this->token->getErrors())->hasKey('user_id');
+        expect($this->token->getErrors())->hasntKey('token');
+        expect($this->token->getErrors())->hasntKey('created_at');
     }
 
     public function testValidateCorrectValues()
     {
-        $token             = new Token();
-        $token->user_id    = 16;
-        $token->token      = $token->createToken();
-        $token->created_at = time();
+        $this->token->user_id    = 16;
+        $this->token->token      = $this->token->createToken();
+        $this->token->created_at = time();
 
-        $token->validate();
-        expect_not($token->getErrors());
+        $this->token->validate();
+        expect_not($this->token->getErrors());
     }
 
     public function testUniqueUserId()
     {
-        $token = new Token();
-
         expect_that(User::findOne(8));
-        $token->user_id = 8;
+        $this->token->user_id = 8;
 
-        $token->validate();
-        expect($token->getErrors())->hasKey('user_id');
+        $this->token->validate();
+        expect($this->token->getErrors())->hasKey('user_id');
 
-        $token->user_id = 18;
+        $this->token->user_id = 18;
 
-        $token->validate();
-        expect($token->getErrors())->hasntKey('user_id');
+        $this->token->validate();
+        expect($this->token->getErrors())->hasntKey('user_id');
     }
 
     public function testExistUser()
     {
-        $token = new Token();
+        $this->token->user_id = 99;
 
-        $token->user_id = 99;
+        $this->token->validate();
+        expect($this->token->getErrors())->hasKey('user_id');
 
-        $token->validate();
-        expect($token->getErrors())->hasKey('user_id');
+        $this->token->user_id = 18;
 
-        $token->user_id = 18;
-
-        $token->validate();
-        expect($token->getErrors())->hasntKey('user_id');
+        $this->token->validate();
+        expect($this->token->getErrors())->hasntKey('user_id');
     }
 
     public function testUser()
     {
-        $token = new Token();
+        $this->token->user_id = 99;
 
-        $token->user_id = 99;
+        expect_not($this->token->user);
 
-        expect_not($token->user);
+        $this->token->user_id = 8;
 
-        $token->user_id = 8;
-
-        expect($token->user->name)->equals('Владимир');
+        expect($this->token->user->name)->equals('Владимир');
     }
 
 }

@@ -6,64 +6,67 @@ use app\models\auth\SignUp;
 use app\models\User;
 use Codeception\Test\Unit;
 
+/**
+ * @property SignUp $signUp
+ */
 class SignupTest extends Unit
 {
 
+    public $signUp;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->signUp = new SignUp();
+    }
+
     public function testValidateCorrectValues()
     {
-        $signup = new SignUp();
+        $this->signUp->name           = 'Poul';
+        $this->signUp->email          = 'poul@ya.ru';
+        $this->signUp->password       = 'truePass2';
+        $this->signUp->passwordRepeat = 'truePass2';
+        $this->signUp->validate();
 
-        $signup->name           = 'Poul';
-        $signup->email          = 'poul@ya.ru';
-        $signup->password       = 'truePass2';
-        $signup->passwordRepeat = 'truePass2';
-        $signup->validate();
-
-        expect($signup->getErrors())->hasntKey('name');
-        expect($signup->getErrors())->hasntKey('email');
-        expect($signup->getErrors())->hasntKey('password');
-        expect($signup->getErrors())->hasntKey('passwordRepeat');
+        expect($this->signUp->getErrors())->hasntKey('name');
+        expect($this->signUp->getErrors())->hasntKey('email');
+        expect($this->signUp->getErrors())->hasntKey('password');
+        expect($this->signUp->getErrors())->hasntKey('passwordRepeat');
     }
 
     public function testPasswordRepeat()
     {
-        $signup = new SignUp();
+        $this->signUp->password       = 'truePass2';
+        $this->signUp->passwordRepeat = 'truePass2';
+        $this->signUp->validate();
 
-        $signup->password       = 'truePass2';
-        $signup->passwordRepeat = 'truePass2';
-        $signup->validate();
+        expect($this->signUp->getErrors())->hasntKey('passwordRepeat');
 
-        expect($signup->getErrors())->hasntKey('passwordRepeat');
+        $this->signUp->passwordRepeat = 'falsePass2';
+        $this->signUp->validate();
 
-        $signup->passwordRepeat = 'falsePass2';
-        $signup->validate();
-
-        expect($signup->getErrors())->hasKey('passwordRepeat');
+        expect($this->signUp->getErrors())->hasKey('passwordRepeat');
     }
 
     public function testUniqueEmail()
     {
-        $signup = new SignUp();
-
         expect_that(User::findByEmail('ivan@gmail.com'));
 
-        $signup->email = 'ivan@gmail.com';
-        $signup->validate();
+        $this->signUp->email = 'ivan@gmail.com';
+        $this->signUp->validate();
 
-        expect($signup->getErrors())->hasKey('email');
+        expect($this->signUp->getErrors())->hasKey('email');
 
-        $signup->email = 'free-email@mail.com';
-        $signup->validate();
+        $this->signUp->email = 'free-email@mail.com';
+        $this->signUp->validate();
 
-        expect($signup->getErrors())->hasntKey('email');
+        expect($this->signUp->getErrors())->hasntKey('email');
     }
 
     public function testRegister()
     {
-        $signup = new SignUp();
-
         $data = [
-            basename($signup::className()) => [
+            basename($this->signUp::className()) => [
                 'name'           => 'Stas',
                 'email'          => 'stasyan@ya.ru',
                 'password'       => '12345Aa',
@@ -71,23 +74,23 @@ class SignupTest extends Unit
             ],
         ];
 
-        $response = $signup->run($data);
-        expect($signup->getErrors())->hasntKey('name');
-        expect($signup->getErrors())->hasntKey('email');
-        expect($signup->getErrors())->hasntKey('password');
-        expect($signup->getErrors())->hasntKey('passwordRepeat');
+        $response = $this->signUp->run($data);
+        expect($this->signUp->getErrors())->hasntKey('name');
+        expect($this->signUp->getErrors())->hasntKey('email');
+        expect($this->signUp->getErrors())->hasntKey('password');
+        expect($this->signUp->getErrors())->hasntKey('passwordRepeat');
         expect($response)->hasntKey('validation');
         expect($response)->hasKey('success');
 
         $data     = [
-            basename($signup::className()) => [
+            basename($this->signUp::className()) => [
                 'name'           => 'Stas',
                 'email'          => 'stasyanj',
                 'password'       => '12345Aajj',
                 'passwordRepeat' => '12345Aa',
             ],
         ];
-        $response = $signup->run($data);
+        $response = $this->signUp->run($data);
         expect($response)->hasntKey('success');
         expect($response)->hasKey('validation');
     }
@@ -97,12 +100,10 @@ class SignupTest extends Unit
      */
     public function testValidateWrongValues($propName, $propVal)
     {
-        $signup = new SignUp();
+        $this->signUp->$propName = $propVal;
+        $this->signUp->validate();
 
-        $signup->$propName = $propVal;
-        $signup->validate();
-
-        expect($signup->getErrors())->hasKey($propName);
+        expect($this->signUp->getErrors())->hasKey($propName);
     }
 
     public function getWrongValues()

@@ -6,80 +6,78 @@ use app\models\User;
 use Codeception\Test\Unit;
 use Yii;
 
+/**
+ * @property User $user
+ */
 class UserTest extends Unit
 {
 
+    public $user;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->user = new User();
+    }
+
     public function testValidateWrongValues()
     {
-        $user = new User([
-            'name'     => Yii::$app->security->generateRandomString(21),
-            'email'    => 'bad_email@ya.',
-            'password' => 'pass',
-        ]);
-        $user->validate();
+        $this->user->name     = Yii::$app->security->generateRandomString(21);
+        $this->user->email    = 'bad_email@ya.';
+        $this->user->password = 'pass';
+        $this->user->validate();
 
-        expect($user->getErrors())->hasKey('name');
-        expect($user->getErrors())->hasKey('email');
+        expect($this->user->getErrors())->hasKey('name');
+        expect($this->user->getErrors())->hasKey('email');
 
-        $user = new User([
-            'name'     => 'Name',
-            'email'    => Yii::$app->security->generateRandomString(50) . '@gmail.com',
-            'password' => 'pass',
-        ]);
-        $user->validate();
-        expect($user->getErrors())->hasKey('email');
+        $this->user->name     = 'Name';
+        $this->user->email    = Yii::$app->security->generateRandomString(50) . '@gmail.com';
+        $this->user->password = 'pass';
+        $this->user->validate();
+        expect($this->user->getErrors())->hasKey('email');
     }
 
     public function testValidateEmptyValues()
     {
-        $user = new User();
-        $user->validate();
+        $this->user->validate();
 
-        expect($user->getErrors())->hasKey('name');
-        expect($user->getErrors())->hasKey('email');
-        expect($user->getErrors())->hasKey('password');
+        expect($this->user->getErrors())->hasKey('name');
+        expect($this->user->getErrors())->hasKey('email');
+        expect($this->user->getErrors())->hasKey('password');
 
-        $user = new User([
-            'name'     => 'Vasya',
-            'email'    => 'saffasya@gmail.com',
-            'password' => 'pass',
-        ]);
-        $user->validate();
-        expect_not($user->getErrors());
+        $this->user->name     = 'Vasya';
+        $this->user->email    = 'saffasya@gmail.com';
+        $this->user->password = 'pass';
+        $this->user->validate();
+        expect_not($this->user->getErrors());
     }
 
     public function testValidateCorrectValues()
     {
-        $user = new User([
-            'name'     => 'Vasya',
-            'email'    => 'ahahah@gmail.com',
-            'password' => 'pass',
-        ]);
-        $user->validate();
+        $this->user->name     = 'Vasya';
+        $this->user->email    = 'ahahah@gmail.com';
+        $this->user->password = 'pass';
+        $this->user->validate();
 
-        expect($user->hasErrors())->false();
+        expect_not($this->user->getErrors());
     }
 
     public function testValidateUniqueEmail()
     {
-        $user = new User([
-            'name'     => 'Vasya',
-            'email'    => 'ivan@gmail.com',
-            'password' => 'pass',
-        ]);
-        $user->validate();
+        $this->user->email = 'ivan@gmail.com';
+        $this->user->validate();
 
-        expect($user->getErrors())->hasKey('email');
+        expect($this->user->getErrors())->hasKey('email');
 
-        $user->email = 'true@mail.ru';
-        $user->validate();
-        expect_not($user->getErrors());
+        $this->user->email = 'true@mail.ru';
+        $this->user->validate();
+        expect($this->user->getErrors())->hasntKey('email');
     }
 
     public function testFindByEmail()
     {
         expect(User::findByEmail('lion@gmail.com')->name)->equals('Lion');
-        expect_not(User::findByEmail('vasya@gmail.com'));
+        expect_not(User::findByEmail('not_exist@gmail.com'));
     }
 
     public function testFindById()
@@ -91,13 +89,13 @@ class UserTest extends Unit
     public function testUserOptions()
     {
         expect_not(User::findOne(1)->userOptions);
-        expect_not(User::findOne(8)->userOptions == null);
+        expect_that(User::findOne(8)->userOptions);
     }
 
     public function testToken()
     {
         expect_not(User::findOne(1)->token);
-        expect_not(User::findOne(8)->token == null);
+        expect_that(User::findOne(8)->token);
     }
 
 }
