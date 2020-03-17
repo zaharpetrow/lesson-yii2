@@ -32,7 +32,7 @@ class UploadAvatarValidator extends Validator
             $('.ratio').removeClass('warning');
             $('.ratio').removeClass('success');
 
-            if (file.size > $maxSize * 1024 * 1024) {
+            if (file.size > $maxSize) {
                 $('.max-size').addClass('error');
             } else {
                 $('.max-size').addClass('success');

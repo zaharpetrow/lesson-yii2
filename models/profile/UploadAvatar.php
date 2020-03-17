@@ -52,9 +52,7 @@ class UploadAvatar extends Model
     public function upload(): array
     {
         if ($this->validate()) {
-            $userOptions      = UserOptions::find()
-                    ->where(['user_id' => Yii::$app->user->id])
-                    ->one();
+            $userOptions      = UserOptions::findOne(['user_id' => Yii::$app->user->id]);
             $fileName         = uniqid() . '.' . $this->imageFile->extension;
             $userOptions->img = $fileName;
             $userOptions->update();
@@ -62,8 +60,7 @@ class UploadAvatar extends Model
             Yii::$app->user->identity->userOptions->img = $fileName;
 
             static::clearDir();
-            $filePath = UrlHelper::avatarUserRoot()
-                    . '/' . $fileName;
+            $filePath = UrlHelper::avatarUserRoot() . '/' . $fileName;
             $this->imageFile->saveAs($filePath);
             Avatar::transformToSquareImage($filePath);
 
