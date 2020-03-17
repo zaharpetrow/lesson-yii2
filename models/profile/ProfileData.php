@@ -35,7 +35,7 @@ class ProfileData extends Model
             throw new UnauthorizedHttpException('Пользователь не авторизован');
         }
 
-        $user = User::findOne(Yii::$app->user->id);
+        $user = Yii::$app->user->identity;
 
         if ($this->name) {
             $user->name = $this->name;
