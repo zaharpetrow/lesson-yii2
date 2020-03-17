@@ -3,9 +3,9 @@
 namespace app\components\helpers;
 
 use app\models\User;
-use Exception;
 use Yii;
 use yii\helpers\Url;
+use yii\web\UnauthorizedHttpException;
 
 class UrlHelper extends Url
 {
@@ -51,10 +51,7 @@ class UrlHelper extends Url
     protected static function getUserDirName(): string
     {
         if (Yii::$app->user->isGuest) {
-            $error = "Метод " . __METHOD__
-                    . " можно вызывать только "
-                    . "для авторизованных пользователей.";
-            throw new Exception($error);
+            throw new UnauthorizedHttpException('Пользователь не авторизован');
         }
 
         return Yii::$app->user->identity->userOptions->dir_name;
