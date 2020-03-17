@@ -2,6 +2,7 @@
 
 namespace app\tests\unit\models;
 
+use app\components\helpers\UrlHelper;
 use app\models\auth\SignIn;
 use app\models\User;
 use Codeception\Test\Unit;
@@ -51,18 +52,31 @@ class SigninTest extends Unit
 
     public function testLogin()
     {
-        expect_that(User::findByEmail('gregory@gmail.com'));
+        expect_that(User::findByEmail('olegTT@gmail.com'));
 
 
 
         $data = [
             basename($this->signin::className()) => [
-                'email'    => 'gregory@gmail.com',
+                'email'    => 'olegTT@gmail.com',
                 'password' => '1234Zz512',
             ],
         ];
 
         $response = $this->signin->run($data);
+
+        $userRoot   = UrlHelper::profileUserRoot();
+        $avatarRoot = UrlHelper::avatarUserRoot();
+
+        $this->assertFileExists($userRoot);
+        $this->assertFileExists($avatarRoot);
+
+        rmdir($avatarRoot);
+        rmdir($userRoot);
+
+        $this->assertFileNotExists($userRoot);
+        $this->assertFileNotExists($avatarRoot);
+
         expect($this->signin->getErrors())->hasntKey('email');
         expect($this->signin->getErrors())->hasntKey('password');
         expect($response)->hasntKey('validation');
