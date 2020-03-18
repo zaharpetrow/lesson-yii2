@@ -7,6 +7,7 @@ use Exception;
 use Imagine\Image\Box;
 use Yii;
 use yii\imagine\Image;
+use yii\web\UnauthorizedHttpException;
 
 class Avatar
 {

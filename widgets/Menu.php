@@ -16,8 +16,10 @@ class Menu extends Widget
 
     public function run()
     {
-        $userIcon        = '<div class="user-icon icon-xs" style="background: url(' . Avatar::getIconXS() . ')"></div>';
-        $userName        = '<div class="menu-username">' . Yii::$app->user->identity->name . '</div>';
+        if (!Yii::$app->user->isGuest) {
+            $userIcon = '<div class="user-icon icon-xs" style="background: url(' . Avatar::getIconXS() . ')"></div>';
+            $userName = '<div class="menu-username">' . Yii::$app->user->identity->name . '</div>';
+        }
 
         return $this->render('header', compact('userIcon', 'userName'));
     }

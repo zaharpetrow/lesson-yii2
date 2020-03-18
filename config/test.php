@@ -13,6 +13,7 @@ return [
         '@bower'         => '@vendor/bower-asset',
         '@npm'           => '@vendor/npm-asset',
         '@app'           => dirname(__DIR__),
+        '@tests'          => '@app/tests',
         '@recoveryLinks' => '@app/mail/recoveryLinks.txt',
         '@verifyLinks'   => '@app/mail/verifyLinks.txt',
     ],
